@@ -68,8 +68,6 @@ class Rocket():
         ax = plot_3D_vec(ax, [self.x, self.y, self.z],
                          self.front_vector, l="Front")
 
-        print(np.dot(self.thrust_components[1], self.thrust_components[2]))
-
         ax = plot_3D_vec(ax, [self.x, self.y, self.z],
                          self.thrust_components[1], l="Front/Back component")
         ax = plot_3D_vec(ax, [self.x, self.y, self.z],
