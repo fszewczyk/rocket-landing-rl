@@ -52,9 +52,8 @@ class Rocket():
 
         self.engine_vector = self.__move_engine(current_movement)
 
-        components = self.__get_thrust_components()
-        self.__update_position(
-            components[0][0], components[0][1], components[0][2])
+        self.thrust_components = self.__get_thrust_components()
+        self.__update_position()
 
     def plot(self, time):
         print(f"Time: {time}")
@@ -69,6 +68,13 @@ class Rocket():
         ax = plot_3D_vec(ax, [self.x, self.y, self.z],
                          self.front_vector, l="Front")
 
+        print(np.dot(self.thrust_components[1], self.thrust_components[2]))
+
+        ax = plot_3D_vec(ax, [self.x, self.y, self.z],
+                         self.thrust_components[1], l="Front/Back component")
+        ax = plot_3D_vec(ax, [self.x, self.y, self.z],
+                         self.thrust_components[2], l="Sideways component")
+
         ax.set(xlim=(-self.config.length + self.x, self.config.length + self.x), ylim=(-self.config.length + self.y,
                self.config.length + self.y), zlim=(self.z, self.config.length + self.z))
 
@@ -78,15 +84,15 @@ class Rocket():
 
     def __get_thrust_components(self):
         comp_along = self.rotation.rotate([self.tvc_vector[0], 0, 0])
-        comp_front_back = self.rotation.rotate([0, self.tvc_vector[1], 0])
-        comp_sideways = self.rotation.rotate([0, 0, self.tvc_vector[2]])
+        comp_front_back = self.rotation.rotate([0, 0, self.tvc_vector[2]])
+        comp_sideways = self.rotation.rotate([0, self.tvc_vector[1], 0])
 
-        return comp_along, comp_front_back, comp_sideways
+        return [comp_along, comp_front_back, comp_sideways]
 
-    def __update_position(self, fx, fy, fz):
-        ax = fx / self.config.mass
-        ay = fy / self.config.mass
-        az = fz / self.config.mass - GRAVITY
+    def __update_position(self):
+        ax = self.thrust_components[0][0] / self.config.mass
+        ay = self.thrust_components[0][1] / self.config.mass
+        az = self.thrust_components[0][2] / self.config.mass - GRAVITY
 
         self.vx += ax * TIMESTEP
         self.vy += ay * TIMESTEP
@@ -112,6 +118,8 @@ class Rocket():
         self.front_vector = self.rotation.rotate([0, 0, 1])
         self.tvc_vector = np.float32([self.config.thrust, 0, 0])
         self.engine_vector = np.float32([self.config.thrust, 0, 0])
+        self.thrust_components = [
+            [self.config.thrust, 0, 0], [0, 0, 0], [0, 0, 0]]
 
         while self.rocket_vector[2] < 0:
             self.rotation = Quaternion.random()
@@ -132,7 +140,7 @@ class Rocket():
         self.tvc_speed = self.config.tvc_angle_speed * TIMESTEP
 
     def __get_actions(self):
-        return random.choice([EngineMovement.FRONT]), 1
+        return random.choice([EngineMovement.LEFT, EngineMovement.FRONT]), 1
 
     def __move_engine(self, movement: EngineMovement):
         if movement == EngineMovement.STAY:
