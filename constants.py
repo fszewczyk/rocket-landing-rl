@@ -1,5 +1,19 @@
 from enum import Enum
 
-STARTING_HEIGHT = 1000
+# Environment
+STARTING_HEIGHT = 200
 GRAVITY = 9.81
 TIMESTEP = 0.01
+
+# Rocket
+WEIGHT = 1
+
+# TVC
+MAX_THRUST = 50
+THRUST_CHANGE_PER_SECOND = 50
+
+
+class ThrustAction(Enum):
+    LOWER = 0
+    STAY = 1
+    HIGHER = 2
