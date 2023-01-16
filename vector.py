@@ -1,6 +1,7 @@
 class Vector():
-    """ Class containing all the required geometric operations,
-        such as rotation and translation.
+    """!
+    Class containing all the required geometric operations,
+    such as rotation and translation.
     """
 
     def __init__(self, dy):

@@ -14,7 +14,8 @@ THRUST_CHANGE_PER_SECOND = 50
 
 
 class ThrustAction(Enum):
-    """ Describes possible actions.
+    """!
+    Enumeration of possible actions.
     """
 
     LOWER = 0
