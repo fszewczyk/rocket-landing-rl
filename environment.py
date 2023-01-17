@@ -66,7 +66,7 @@ class Environment():
         reward = 0
         self.timestep += 1
 
-        return self.__get_state(), reward, self.rocket.y <= 0 or self.rocket.y > 2*STARTING_HEIGHT
+        return self.__get_state(), reward, self.rocket.position_y <= 0 or self.rocket.position_y > 2*STARTING_HEIGHT
 
     def __get_state(self):
         """!
@@ -76,7 +76,7 @@ class Environment():
         """
 
         state = []
-        state.append(self.rocket.y / STARTING_HEIGHT)
+        state.append(self.rocket.position_y / STARTING_HEIGHT)
         state.append(self.rocket.velocity_y)
         state.append(self.tvc.current_thrust / MAX_THRUST)
 
@@ -113,3 +113,7 @@ class Environment():
             return EngineZAction.STAY
         elif action < 9:
             return EngineZAction.RIGHT
+
+    def __str__(self):
+        along, side = self.rocket.get_rotated_vectors()
+        return f"Environment:\n\tRocket: {self.rocket}\n\tTVC: {self.tvc}\n\tImpact on rocket: \n\t\tPush: {self.tvc.current_thrust * self.tvc.get_component_along_vector(along):.2f} N\n\t\tRotate: {self.tvc.current_thrust * self.tvc.get_component_along_vector(side):.2f} N"

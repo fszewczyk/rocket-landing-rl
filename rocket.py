@@ -6,7 +6,7 @@ from constants import *
 class Rocket(Vector):
     """!
     Class describing the rocket. 
-        Note that rocket is seperate from the TVC mount.
+    Note that rocket is seperate from the TVC mount.
     """
 
     def __init__(self, y, weight):
@@ -19,7 +19,7 @@ class Rocket(Vector):
 
         super(Rocket, self).__init__()
 
-        self.y = y
+        self.position_y = y
         self.weight = weight
 
         self.velocity_y = 0
@@ -35,4 +35,4 @@ class Rocket(Vector):
         self.velocity_y -= TIMESTEP * GRAVITY
         self.velocity_y += TIMESTEP * (tvc.current_thrust / self.weight)
 
-        self.y += TIMESTEP * self.velocity_y
+        self.position_y += TIMESTEP * self.velocity_y

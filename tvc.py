@@ -67,3 +67,6 @@ class TVC(Vector):
         """
 
         return
+
+    def __str__(self):
+        return f"Thrust: {self.current_thrust} N, Direction: ({self.x:.2f}, {self.y:.2f})"

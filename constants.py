@@ -17,7 +17,7 @@ ROTATION_SPEED_PER_SECOND = 2
 class Action(IntEnum):
     """!
     Enumeration of possible actions.
-    Pattern: THRUST_ZDIRECTION_XDIRECTION
+    Pattern: THRUST_DIRECTION
     """
 
     LOWER_LEFT = 0

@@ -7,7 +7,7 @@ class Vector():
     such as rotation and translation.
     """
 
-    def __init__(self, x=0, y=1, z=0):
+    def __init__(self, x=0, y=1):
         """!
         Initializes a Vector.
         Note that this vector is always a unit vector.
@@ -20,19 +20,6 @@ class Vector():
 
         self.x = x
         self.y = y
-        self.z = z
-
-        self.__normalize()
-
-    def rotate_around_x(self, angle):
-        """!
-        Rotates the vector around x axis.
-
-        @param angle (float): Angle in radians
-        """
-
-        self.y = self.y * math.cos(angle) - self.z * math.sin(angle)
-        self.z = self.y * math.sin(angle) + self.z * math.cos(angle)
 
         self.__normalize()
 
@@ -43,8 +30,10 @@ class Vector():
         @param angle (float): Angle in radians
         """
 
-        self.x = self.x * math.cos(angle) - self.y * math.sin(angle)
+        temp_x = self.x * math.cos(angle) - self.y * math.sin(angle)
         self.y = self.x * math.sin(angle) + self.y * math.cos(angle)
+
+        self.x = temp_x
 
         self.__normalize()
 
@@ -57,11 +46,48 @@ class Vector():
         @return list: Vector components
         """
 
-        return [self.x * length, self.y * length, self.z * length]
+        return [self.x * length, self.y * length]
+
+    def get_component_along_vector(self, vector):
+        """!
+        Calculates the components along a specified vector
+        using a dot product.
+
+        @param vector (Vector): Vector to calculate the components along
+        """
+
+        return self.x * vector.x + self.y * vector.y
+
+    def get_rotated_vectors(self):
+        """!
+        Calculated 2 axis that are rotated to fit this vector
+
+        @return list: Vectors defining transformed coordinate system
+
+        Example:
+        [1,1] -> ([0.707,0.707,0],[0.707,-0.707,0])
+        """
+
+        along = Vector(self.x, self.y)
+        side = Vector(self.x, self.y)
+        side.rotate_around_z(math.pi / 2)
+
+        return along, side
 
     def __normalize(self):
-        length = math.sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
+        """!
+        Converts the vector into unit vector
+        """
 
-        self.x /= length
-        self.y /= length
-        self.z /= length
+        length = Vector.get_length(self.x, self.y)
+
+        if length > 0:
+            self.x /= length
+            self.y /= length
+
+    @staticmethod
+    def get_length(x, y):
+        return math.sqrt(x*x + y*y)
+
+    def __str__(self):
+        return f"({self.x:.2f}, {self.y:.2f})"
