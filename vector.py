@@ -5,5 +5,10 @@ class Vector():
     """
 
     def __init__(self, dy):
+        """!
+        Initializes a Vector
+
+        @param dy (float): y component of the unit vector
+        """
+
         self.dy = dy
-        pass
