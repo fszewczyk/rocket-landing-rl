@@ -36,18 +36,18 @@ class Environment():
         """!
         Updates the environment for one timestep.
 
-        @param action (ThrustAction): _description_
+        @param action (Action): _description_
 
         @return list: newly observed state of the environment
         @return float: sampled reward
         @return boolean: whether or not the simulation is finished
         """
 
-        if action == ThrustAction.LOWER:
+        if action == Action.LOWER:
             self.tvc.decrease_thrust()
-        elif action == ThrustAction.STAY:
+        elif action == Action.STAY:
             self.tvc.stay_thrust()
-        elif action == ThrustAction.HIGHER:
+        elif action == Action.HIGHER:
             self.tvc.increase_thrust()
 
         self.rocket.update_position(self.tvc)
