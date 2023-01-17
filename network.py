@@ -55,26 +55,27 @@ class Agent():
         @param eps_end      (float): Minimum size of epsilon in the epsilon-greedy exploration strategy
         @param eps_dec      (float): Decrease step of epsilon in the epsilon-greedy exploration strategy
         """
+
         self.gamma = gamma
         self.epsilon = epsilon
         self.eps_min = eps_min
         self.eps_dec = eps_dec
         self.lr = lr
         self.action_space = [i for i in range(n_actions)]
-        self.mem_size = max_mem_size
+        self.buffer_size = max_mem_size
         self.batch_size = batch_size
         self.mem_cntr = 0
 
         self.q_eval = QNetwork(
             lr=lr, input_dims=input_dims, fc1_dims=256, fc2_dims=256, n_actions=n_actions)
 
-        self.state_memory = np.zeros(
-            (self.mem_size, *input_dims), dtype=np.float32)
-        self.new_state_memory = np.zeros(
-            (self.mem_size, *input_dims), dtype=np.float32)
-        self.action_memory = np.zeros(self.mem_size, dtype=np.int32)
-        self.reward_memory = np.zeros(self.mem_size, dtype=np.float32)
-        self.terminal_memory = np.zeros(self.mem_size, dtype=np.bool)
+        self.state_buffer = np.zeros(
+            (self.buffer_size, *input_dims), dtype=np.float32)
+        self.new_state_buffer = np.zeros(
+            (self.buffer_size, *input_dims), dtype=np.float32)
+        self.action_buffer = np.zeros(self.buffer_size, dtype=np.int32)
+        self.reward_buffer = np.zeros(self.buffer_size, dtype=np.float32)
+        self.terminal_buffer = np.zeros(self.buffer_size, dtype=np.bool)
 
     def store_transition(self, state, action, reward, new_state, done):
         """!
@@ -86,12 +87,12 @@ class Agent():
         @param new_state    (list): Newly observed state.
         """
 
-        index = self.mem_cntr % self.mem_size
-        self.state_memory[index] = state
-        self.new_state_memory[index] = new_state
-        self.reward_memory[index] = reward
-        self.action_memory[index] = action
-        self.terminal_memory[index] = done
+        index = self.mem_cntr % self.buffer_size
+        self.state_buffer[index] = state
+        self.new_state_buffer[index] = new_state
+        self.reward_buffer[index] = reward
+        self.action_buffer[index] = action
+        self.terminal_buffer[index] = done
 
         self.mem_cntr += 1
 
@@ -124,20 +125,20 @@ class Agent():
 
         self.q_eval.optimizer.zero_grad()
 
-        max_mem = min(self.mem_cntr, self.mem_size)
+        max_mem = min(self.mem_cntr, self.buffer_size)
         batch = np.random.choice(max_mem, self.batch_size, replace=False)
 
         batch_index = np.arange(self.batch_size, dtype=np.int32)
 
-        state_batch = T.tensor(self.state_memory[batch]).to(self.q_eval.device)
+        state_batch = T.tensor(self.state_buffer[batch]).to(self.q_eval.device)
         new_state_batch = T.tensor(
-            self.new_state_memory[batch]).to(self.q_eval.device)
+            self.new_state_buffer[batch]).to(self.q_eval.device)
         reward_batch = T.tensor(
-            self.reward_memory[batch]).to(self.q_eval.device)
+            self.reward_buffer[batch]).to(self.q_eval.device)
         terminal_batch = T.tensor(
-            self.terminal_memory[batch]).to(self.q_eval.device)
+            self.terminal_buffer[batch]).to(self.q_eval.device)
 
-        action_batch = self.action_memory[batch]
+        action_batch = self.action_buffer[batch]
         q_eval = self.q_eval.forward(state_batch)[batch_index, action_batch]
         q_next = self.q_eval.forward(new_state_batch)
         q_next[terminal_batch] = 0.0
