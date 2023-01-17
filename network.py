@@ -17,7 +17,7 @@ class QNetwork(nn.Module):
         @param n_actions    (int): Number of possible actions
         """
 
-        super(DQN, self).__init__()
+        super(QNetwork, self).__init__()
 
         # TODO: check different types of layers
         self.layer1 = nn.Linear(*input_dims, layer1_dims)

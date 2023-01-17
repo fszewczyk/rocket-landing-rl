@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import IntEnum
 
 # Environment
 STARTING_HEIGHT = 200
@@ -11,9 +11,10 @@ WEIGHT = 1
 # TVC
 MAX_THRUST = 50
 THRUST_CHANGE_PER_SECOND = 50
+ROTATION_SPEED_PER_SECOND = 2
 
 
-class Action(Enum):
+class Action(IntEnum):
     """!
     Enumeration of possible actions.
     Pattern: THRUST_ZDIRECTION_XDIRECTION
@@ -30,3 +31,23 @@ class Action(Enum):
     LOWER_RIGHT = 6
     STAY_RIGHT = 7
     HIGHER_RIGHT = 8
+
+
+class ThrustAction(IntEnum):
+    """!
+    Enumeration of possible thrust actions.
+    """
+
+    LOWER = 0
+    STAY = 1
+    HIGHER = 2
+
+
+class EngineZAction(IntEnum):
+    """!
+    Enumeration of possible engine mount actions in z-axis.
+    """
+
+    LEFT = 0
+    STAY = 1
+    RIGHT = 2

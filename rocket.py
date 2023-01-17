@@ -16,7 +16,8 @@ class Rocket(Vector):
         @param y (float): Starting Y coordinate (height) of the rocket in 3D space.
         @param weight (float): Weight of the rocket in kg.
         """
-        super().__init__()
+
+        super(Rocket, self).__init__()
 
         self.y = y
         self.weight = weight
