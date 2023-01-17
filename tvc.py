@@ -15,7 +15,7 @@ class TVC(Vector):
         @param thrust_step (float): Rate of change of the thrust in N/s
         """
 
-        super().__init__(1)
+        super().__init__()
 
         self.max_thrust = max_thrust
         self.thrust_step = thrust_step

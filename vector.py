@@ -22,6 +22,8 @@ class Vector():
         self.y = y
         self.z = z
 
+        self.__normalize()
+
     def rotate_around_x(self, angle):
         """!
         Rotates the vector around x axis.
@@ -32,6 +34,8 @@ class Vector():
         self.y = self.y * math.cos(angle) - self.z * math.sin(angle)
         self.z = self.y * math.sin(angle) + self.z * math.cos(angle)
 
+        self.__normalize()
+
     def rotate_around_z(self, angle):
         """!
         Rotates the vector around z axis.
@@ -41,3 +45,23 @@ class Vector():
 
         self.x = self.x * math.cos(angle) - self.y * math.sin(angle)
         self.y = self.x * math.sin(angle) + self.y * math.cos(angle)
+
+        self.__normalize()
+
+    def get_components(self, length):
+        """!
+        Calculates the components of a vector of specified length.
+
+        @param length (float): Length of a desired vector
+
+        @return list: Vector components
+        """
+
+        return [self.x * length, self.y * length, self.z * length]
+
+    def __normalize(self):
+        length = math.sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
+
+        self.x /= length
+        self.y /= length
+        self.z /= length
