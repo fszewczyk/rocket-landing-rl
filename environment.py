@@ -25,7 +25,8 @@ class Environment():
 
         @return list: current state of the environment
         """
-        self.rocket = Rocket(STARTING_HEIGHT, WEIGHT)
+        self.rocket = Rocket(0, STARTING_HEIGHT, WEIGHT,
+                             MOMENT_OF_INERTIA, CENTER_OF_MASS)
         self.tvc = TVC(MAX_THRUST, THRUST_CHANGE_PER_SECOND,
                        ROTATION_SPEED_PER_SECOND)
 
@@ -62,6 +63,7 @@ class Environment():
             self.tvc.rotate_right()
 
         self.rocket.update_position(self.tvc)
+        self.rocket.log(self.tvc)
 
         reward = 0
         self.timestep += 1

@@ -1,15 +1,34 @@
-from vector import Vector
+from dataclasses import dataclass
+import math
 
+from vector import Vector
 from constants import *
+
+
+class FlightLog():
+    def __init__(self):
+        self.position_x = []
+        self.position_y = []
+
+        self.velocity_x = []
+        self.velocity_y = []
+
+        self.angular_velocity = []
+
+        self.direction_x = []
+        self.direction_y = []
+
+        self.tvc_angle = []
+        self.tvc_thrust = []
 
 
 class Rocket(Vector):
     """!
-    Class describing the rocket. 
+    Class describing the rocket.
     Note that rocket is seperate from the TVC mount.
     """
 
-    def __init__(self, y, weight):
+    def __init__(self, x, y, weight, moment_of_inertia, center_of_mass):
         """!
         Constructs the rocket object.
 
@@ -19,20 +38,79 @@ class Rocket(Vector):
 
         super(Rocket, self).__init__()
 
+        self.position_x = x
         self.position_y = y
-        self.weight = weight
 
+        self.velocity_x = 0
         self.velocity_y = 0
+
+        self.angular_velocity = 0
+
+        self.weight = weight
+        self.moment_of_inertia = moment_of_inertia
+        self.center_of_mass = center_of_mass
+
+        self.flight_log = FlightLog()
 
     def update_position(self, tvc):
         """!
-        Updates the rocket position 
+        Updates the rocket position
         based on TVC's configuration.
+        Note that this function also updates the TVC position
 
         @param tvc (Object): TVC object used to alter rocket's trajectory
         """
 
-        self.velocity_y -= TIMESTEP * GRAVITY
-        self.velocity_y += TIMESTEP * (tvc.current_thrust / self.weight)
+        along, side = self.get_rotated_vectors()
 
+        # Updating rocket's position
+        push_force = tvc.current_thrust * tvc.get_component_along_vector(along)
+        rotate_force = tvc.current_thrust * \
+            tvc.get_component_along_vector(side)
+
+        self.velocity_x += TIMESTEP * (along.x * push_force) / self.weight
+
+        self.velocity_y -= TIMESTEP * GRAVITY
+        self.velocity_y += TIMESTEP * (along.y * push_force) / self.weight
+
+        self.position_x += TIMESTEP * self.velocity_x
         self.position_y += TIMESTEP * self.velocity_y
+
+        # Updating rocket's rotation
+        angular_acceleration = self.center_of_mass * \
+            rotate_force / self.moment_of_inertia
+
+        angular_acceleration = round(angular_acceleration, 5)
+
+        self.angular_velocity += TIMESTEP * angular_acceleration
+
+        self.rotate_around_z(TIMESTEP * self.angular_velocity)
+        tvc.rotate_around_z(TIMESTEP * self.angular_velocity)
+
+    def log(self, tvc):
+        """!
+        Logs the flight data for later preview
+
+        @param tvc (TVC): TVC object to log
+        """
+
+        self.flight_log.position_x.append(self.position_x)
+        self.flight_log.position_y.append(self.position_y)
+
+        self.flight_log.velocity_x.append(self.velocity_x)
+        self.flight_log.velocity_y.append(self.velocity_y)
+
+        self.flight_log.angular_velocity.append(self.angular_velocity)
+
+        self.flight_log.direction_x.append(self.x)
+        self.flight_log.direction_y.append(self.y)
+
+        tvc_angle = math.degrees(
+            math.atan2(tvc.x*self.y - self.x*tvc.y, tvc.x*self.x+tvc.y*self.y))
+
+        self.flight_log.tvc_angle.append(tvc_angle)
+
+        self.flight_log.tvc_thrust.append(tvc.current_thrust)
+
+    def is_ground(self):
+        return self.position_y <= 0
