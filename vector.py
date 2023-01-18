@@ -90,4 +90,4 @@ class Vector():
         return math.sqrt(x*x + y*y)
 
     def __str__(self):
-        return f"({self.x:.2f}, {self.y:.2f})"
+        return f"({self.x:.3f}, {self.y:.3f})"

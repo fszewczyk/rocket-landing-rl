@@ -28,7 +28,7 @@ class Rocket(Vector):
     Note that rocket is seperate from the TVC mount.
     """
 
-    def __init__(self, x, y, weight, moment_of_inertia, center_of_mass):
+    def __init__(self, x, y, weight, moment_of_inertia, center_of_mass, dir_x=0, dir_y=1):
         """!
         Constructs the rocket object.
 
@@ -36,7 +36,7 @@ class Rocket(Vector):
         @param weight (float): Weight of the rocket in kg.
         """
 
-        super(Rocket, self).__init__()
+        super(Rocket, self).__init__(x=dir_x, y=dir_y)
 
         self.position_x = x
         self.position_y = y
@@ -108,7 +108,7 @@ class Rocket(Vector):
         tvc_angle = math.degrees(
             math.atan2(tvc.x*self.y - self.x*tvc.y, tvc.x*self.x+tvc.y*self.y))
 
-        self.flight_log.tvc_angle.append(tvc_angle)
+        self.flight_log.tvc_angle.append(tvc.level)
 
         self.flight_log.tvc_thrust.append(tvc.current_thrust)
 

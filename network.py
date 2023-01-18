@@ -26,21 +26,21 @@ class QNetwork(nn.Module):
 
         # TODO: Check different optimizer and loss
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
-        self.loss = nn.MSELoss()
+        self.loss = nn.L1Loss()
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
         self.to(self.device)
 
     def feed_forward(self, state):
         # TODO: check different activations
-        x = F.relu(self.layer1(state))
-        x = F.relu(self.layer2(x))
+        x = T.tanh(self.layer1(state))
+        x = T.tanh(self.layer2(x))
         actions = self.layer3(x)
 
         return actions
 
 
 class Agent():
-    def __init__(self, gamma, epsilon, lr, input_dims, batch_size, n_actions, max_mem_size=10000, eps_min=0.01, eps_dec=3e-4):
+    def __init__(self, gamma, epsilon, lr, input_dims, batch_size, n_actions, max_mem_size=25000, eps_min=0.01, eps_dec=3e-4):
         """!
         Initializes an Agent. 
         Note that Agent is seperate from the Deep Q Network.
@@ -67,7 +67,7 @@ class Agent():
         self.mem_cntr = 0
 
         self.q_eval = QNetwork(
-            lr=lr, input_dims=input_dims, fc1_dims=256, fc2_dims=256, n_actions=n_actions)
+            lr=lr, input_dims=input_dims, layer1_dims=32, layer2_dims=32, n_actions=n_actions)
 
         self.state_buffer = np.zeros(
             (self.buffer_size, *input_dims), dtype=np.float32)
@@ -88,6 +88,7 @@ class Agent():
         """
 
         index = self.mem_cntr % self.buffer_size
+
         self.state_buffer[index] = state
         self.new_state_buffer[index] = new_state
         self.reward_buffer[index] = reward
@@ -108,7 +109,7 @@ class Agent():
         # TODO: Implement softmax exploration
         if np.random.random() > self.epsilon:
             state = T.tensor([observation]).to(self.q_eval.device)  # why []?
-            actions = self.q_eval.forward(state)
+            actions = self.q_eval.feed_forward(state)
             action = T.argmax(actions).item()
         else:
             action = np.random.choice(self.action_space)
@@ -139,8 +140,9 @@ class Agent():
             self.terminal_buffer[batch]).to(self.q_eval.device)
 
         action_batch = self.action_buffer[batch]
-        q_eval = self.q_eval.forward(state_batch)[batch_index, action_batch]
-        q_next = self.q_eval.forward(new_state_batch)
+        q_eval = self.q_eval.feed_forward(
+            state_batch)[batch_index, action_batch]
+        q_next = self.q_eval.feed_forward(new_state_batch)
         q_next[terminal_batch] = 0.0
 
         q_target = reward_batch + self.gamma * T.max(q_next, dim=1)[0]
