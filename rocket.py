@@ -15,11 +15,12 @@ class FlightLog():
 
         self.angular_velocity = []
 
-        self.direction_x = []
-        self.direction_y = []
+        self.rocket_angle = []
 
         self.tvc_angle = []
         self.tvc_thrust = []
+
+        self.time = []
 
 
 class Rocket(Vector):
@@ -87,11 +88,12 @@ class Rocket(Vector):
         self.rotate_around_z(TIMESTEP * self.angular_velocity)
         tvc.rotate_around_z(TIMESTEP * self.angular_velocity)
 
-    def log(self, tvc):
+    def log(self, tvc, time):
         """!
         Logs the flight data for later preview
 
         @param tvc (TVC): TVC object to log
+        @param time (float): current timestep
         """
 
         self.flight_log.position_x.append(self.position_x)
@@ -100,20 +102,37 @@ class Rocket(Vector):
         self.flight_log.velocity_x.append(self.velocity_x)
         self.flight_log.velocity_y.append(self.velocity_y)
 
-        self.flight_log.angular_velocity.append(self.angular_velocity)
+        self.flight_log.angular_velocity.append(
+            math.degrees(self.angular_velocity))
 
-        self.flight_log.direction_x.append(self.x)
-        self.flight_log.direction_y.append(self.y)
+        self.flight_log.rocket_angle.append(
+            math.degrees(self.get_signed_angle_with_y_axis()))
 
-        tvc_angle = math.degrees(
-            math.atan2(tvc.x*self.y - self.x*tvc.y, tvc.x*self.x+tvc.y*self.y))
-
-        self.flight_log.tvc_angle.append(tvc.level)
-
+        self.flight_log.tvc_angle.append(math.degrees(tvc.level))
         self.flight_log.tvc_thrust.append(tvc.current_thrust)
 
+        self.flight_log.time.append(time)
+
     def get_unsigned_angle_with_y_axis(self):
+        """!
+        Calculates the unsigned angle between the rocket and the y-axis.
+
+        @ return float: angle in radians
+        """
         return abs(math.atan(self.x / self.y))
 
+    def get_signed_angle_with_y_axis(self):
+        """!
+        Calculates the signed angle between the rocket and the y-axis.
+
+        @ return float: angle in radians
+        """
+        return math.atan(self.x / self.y)
+
     def is_ground(self):
+        """!
+        Checks if the rocket hit the ground
+
+        @param bool: True if rocket is on the ground
+        """
         return self.position_y <= 0

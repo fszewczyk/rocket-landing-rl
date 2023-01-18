@@ -123,7 +123,7 @@ class Environment():
             self.tvc.rotate_right()
 
         self.rocket.update_position(self.tvc)
-        self.rocket.log(self.tvc)
+        self.rocket.log(self.tvc, self.timestep)
 
         reward = 0
 
@@ -134,9 +134,9 @@ class Environment():
                 self.rocket.get_unsigned_angle_with_y_axis()
 
         reward -= TIMESTEP * PENALTY_PER_RADIAN_OFF_PER_SECOND * \
-            self.rocket.get_unsigned_angle_with_y_axis
+            self.rocket.get_unsigned_angle_with_y_axis()
 
-        self.timestep += 1
+        self.timestep += TIMESTEP
 
         return self.__get_state(), reward, self.rocket.position_y <= 0 or self.rocket.position_y > 2*STARTING_HEIGHT or self.rocket.y < 0
 
