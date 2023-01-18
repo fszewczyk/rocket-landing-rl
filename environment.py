@@ -7,24 +7,52 @@ from constants import *
 
 
 class Curriculum():
+    """!
+    Used for Curriculum Learning. 
+    Defines the current settings of the environment.
+    """
+
     def __init__(self):
+        """!
+        Initializes the curriculum.
+        By default: 
+            a) turning is disabled
+            b) rocket starts from a fixed height
+            c) rocket starts in an upright position
+        """
+
         self.set_fixed_height()
         self.disable_turn()
         self.disable_random_starting_rotation()
 
     def set_fixed_height(self):
+        """!
+        Sets the starting height of the rocket to a fixed number
+        """
         self.start_height = STARTING_HEIGHT
 
     def disable_turn(self):
+        """!
+        Disables rocket's ability to turn the TVC engine
+        """
         self.allow_turn = False
 
     def enable_turn(self):
+        """!
+        Enables rocket's ability to turn the TVC engine
+        """
         self.allow_turn = True
 
     def enable_random_starting_rotation(self):
+        """!
+        Enables random starting rotation of a rocket
+        """
         self.random_rotation = True
 
     def disable_random_starting_rotation(self):
+        """!
+        Disables random starting rotation of a rocket
+        """
         self.random_rotation = False
 
 
@@ -45,10 +73,12 @@ class Environment():
 
     def reset(self):
         """!
-        Resets the environment to default conditions
+        Resets the environment to conditions defined 
+        by curriculum and predefined constants
 
         @return list: current state of the environment
         """
+
         start_dx = 0
         start_dy = 1
         if self.curriculum.random_rotation:
@@ -101,10 +131,10 @@ class Environment():
             reward += REWARD_LANDED
             reward -= PENALTY_PER_M_S_AT_LANDING * (self.rocket.velocity_y**2)
             reward -= PENALTY_PER_RADIAN_AT_LANDING * \
-                abs(math.atan(self.rocket.x / self.rocket.y))
+                self.rocket.get_unsigned_angle_with_y_axis()
 
         reward -= TIMESTEP * PENALTY_PER_RADIAN_OFF_PER_SECOND * \
-            abs(math.atan(self.rocket.x / self.rocket.y))
+            self.rocket.get_unsigned_angle_with_y_axis
 
         self.timestep += 1
 

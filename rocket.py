@@ -112,5 +112,8 @@ class Rocket(Vector):
 
         self.flight_log.tvc_thrust.append(tvc.current_thrust)
 
+    def get_unsigned_angle_with_y_axis(self):
+        return abs(math.atan(self.x / self.y))
+
     def is_ground(self):
         return self.position_y <= 0
