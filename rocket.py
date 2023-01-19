@@ -4,6 +4,8 @@ import math
 from vector import Vector
 from constants import *
 
+import cv2
+
 
 class FlightLog():
     def __init__(self):
@@ -52,6 +54,9 @@ class Rocket(Vector):
         self.center_of_mass = center_of_mass
 
         self.flight_log = FlightLog()
+
+        self.icon = cv2.imread("icons/rocket.png")
+        self.icon = cv2.resize(self.icon, (100, 20))
 
     def update_position(self, tvc):
         """!

@@ -1,11 +1,12 @@
 import math
 import random
+import numpy as np
+import gym
+import cv2
 
 from rocket import Rocket
 from tvc import TVC
 from constants import *
-
-import gym
 
 
 class Curriculum():
@@ -109,15 +110,8 @@ class Environment(gym.Env):
 
         super(Environment, self).__init__()
 
-        self.observation_shape = (1000, 400, 3)
-        self.observation_space = spaces.Box(low=np.zeros(self.observation_shape),
-                                            high=np.ones(
-                                                self.observation_shape),
-                                            dtype=np.float16)
-
-        self.action_space = spaces.Discrete(4,)
-
-        self.canvas = np.ones(self.observation_shape) * 1
+        self.canvas_shape = (1000, 400, 3)
+        self.canvas = np.ones(shape=self.canvas_shape) * 1
 
         self.curriculum = Curriculum()
         self.reset()
@@ -146,6 +140,8 @@ class Environment(gym.Env):
                        ROTATION_SPEED_PER_SECOND, dir_x=start_dx, dir_y=start_dy)
 
         self.timestep = 0
+
+        self.close()
 
         return self.__get_state()
 
@@ -194,6 +190,41 @@ class Environment(gym.Env):
         self.timestep += TIMESTEP
 
         return self.__get_state(), reward, self.rocket.position_y <= 0 or abs(self.rocket.position_x) > 5 or self.rocket.y < 0
+
+    def render(self, mode="human"):
+        self.__draw_on_canvas()
+
+        assert mode in ["human", "rgb_array"]
+
+        if mode == "human":
+            cv2.imshow("Rocket landing", self.canvas)
+            cv2.waitKey(int(1000*TIMESTEP))
+
+        elif mode == "rgb_array":
+            return self.canvas
+
+    def close(self):
+        cv2.destroyAllWindows()
+        cv2.waitKey(1)
+
+    def __draw_on_canvas(self):
+        self.canvas = np.ones(shape=self.canvas_shape) * 1
+
+        screen_rocket_pos_y = int(self.rocket.position_y * 40)
+        screen_rocket_pos_x = int((self.rocket.position_x + 2) * 40)
+
+        if screen_rocket_pos_x < 0:
+            return
+        if screen_rocket_pos_y < 0:
+            return
+
+        if screen_rocket_pos_x + self.rocket.icon.shape[1] >= self.canvas_shape[1]:
+            return
+        if screen_rocket_pos_y + self.rocket.icon.shape[0] >= self.canvas_shape[0]:
+            return
+
+        self.canvas[screen_rocket_pos_y: screen_rocket_pos_y + self.rocket.icon.shape[0],
+                    screen_rocket_pos_x: screen_rocket_pos_x + self.rocket.icon.shape[1]] = self.rocket.icon
 
     def __get_state(self):
         """!
