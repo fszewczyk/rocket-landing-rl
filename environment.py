@@ -168,8 +168,6 @@ class Environment(gym.Env):
         else:
             self.tvc.current_thrust = 0
 
-        # print(action, self.tvc.current_thrust, self.tvc.level)
-
         self.rocket.update_position(self.tvc)
         self.rocket.log(self.tvc, self.timestep)
 
@@ -208,30 +206,46 @@ class Environment(gym.Env):
         cv2.waitKey(1)
 
     def __draw_on_canvas(self):
+        GROUND_HEIGHT = 50
+
         screen_rocket_pos_y = int(
-            self.canvas_shape[0] - (self.rocket.position_y * 20)) - self.rocket.icon.shape[0]
+            self.canvas_shape[0] - (self.rocket.position_y * 55)) - self.rocket.icon_idle.shape[0] - GROUND_HEIGHT
         screen_rocket_pos_x = int(
-            (self.rocket.position_x + 2) * 100) - self.rocket.icon.shape[1]//2
+            (self.rocket.position_x + 5.5) * 55) - self.rocket.icon_idle.shape[1]//2
 
         if screen_rocket_pos_x < 0:
             return
         if screen_rocket_pos_y < 0:
             return
 
-        if screen_rocket_pos_x + self.rocket.icon.shape[1] >= self.canvas_shape[1]:
+        if screen_rocket_pos_x + self.rocket.icon_idle.shape[1] >= self.canvas_shape[1]:
             return
-        if screen_rocket_pos_y + self.rocket.icon.shape[0] >= self.canvas_shape[0]:
+        if screen_rocket_pos_y + self.rocket.icon_idle.shape[0] >= self.canvas_shape[0]:
             return
 
         self.canvas = np.ones(shape=self.canvas_shape)
 
         rot_mat = cv2.getRotationMatrix2D(
-            (self.rocket.icon.shape[1]//2, self.rocket.icon.shape[0]//2), math.degrees(-self.rocket.get_signed_angle_with_y_axis()), 1.0)
-        rocket_icon = cv2.warpAffine(
-            self.rocket.icon, rot_mat, self.rocket.icon.shape[1::-1], flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(255, 255, 255))
+            (self.rocket.icon_idle.shape[1]//2, self.rocket.icon_idle.shape[0]//2), math.degrees(-self.rocket.get_signed_angle_with_y_axis()), 1.0)
 
-        self.canvas[screen_rocket_pos_y: screen_rocket_pos_y + self.rocket.icon.shape[0],
-                    screen_rocket_pos_x: screen_rocket_pos_x + self.rocket.icon.shape[1]] = rocket_icon / 255
+        if self.tvc.current_thrust == 0:
+            rocket_icon = cv2.warpAffine(
+                self.rocket.icon_idle, rot_mat, self.rocket.icon_idle.shape[1::-1], flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(255, 255, 255))
+        elif abs(self.tvc.level) < 0.01:
+            rocket_icon = cv2.warpAffine(
+                self.rocket.icon_mid, rot_mat, self.rocket.icon_idle.shape[1::-1], flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(255, 255, 255))
+        elif self.tvc.level < 0:
+            rocket_icon = cv2.warpAffine(
+                self.rocket.icon_left, rot_mat, self.rocket.icon_idle.shape[1::-1], flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(255, 255, 255))
+        elif self.tvc.level > 0:
+            rocket_icon = cv2.warpAffine(
+                self.rocket.icon_right, rot_mat, self.rocket.icon_idle.shape[1::-1], flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(255, 255, 255))
+
+        self.canvas[screen_rocket_pos_y: screen_rocket_pos_y + self.rocket.icon_idle.shape[0],
+                    screen_rocket_pos_x: screen_rocket_pos_x + self.rocket.icon_idle.shape[1]] = rocket_icon / 255
+
+        self.canvas[self.canvas.shape[0] -
+                    GROUND_HEIGHT:self.canvas.shape[0], 0:self.canvas.shape[1]] = 0
 
     def __get_state(self):
         """!

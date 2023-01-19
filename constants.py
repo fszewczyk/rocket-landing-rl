@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 # Environment
-STARTING_HEIGHT = 1
+STARTING_HEIGHT = 1.4
 GRAVITY = 9.81
 TIMESTEP = 0.035
 

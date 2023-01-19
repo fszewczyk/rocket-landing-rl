@@ -22,6 +22,8 @@ angles = []
 n_games = 100000
 
 dash = Dashboard()
+env.curriculum.set_random_height(1, 2)
+env.curriculum.enable_random_height()
 
 for i in range(n_games):
     score = 0
@@ -35,7 +37,7 @@ for i in range(n_games):
         agent.epsilon = 0.1
 
     if i == 1000:
-        env.curriculum.set_random_height(0.5, 5)
+        env.curriculum.set_random_height(1.5, 10)
         agent.epsilon = 0.1
 
     if i == 2000:
@@ -60,6 +62,9 @@ for i in range(n_games):
         agent.learn()
 
         observation = new_observation
+
+        if i >= 5000:
+            env.render()
 
     if i % 100 == 0:
         dash.plot_log(env.rocket.flight_log, episode=i)

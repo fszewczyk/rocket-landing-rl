@@ -66,4 +66,4 @@ class Dashboard():
         br.set_xlabel("Time (s)")
         br.set_ylabel("Thrust (N)")
 
-        plt.savefig(f'flight_{episode}.png', dpi=200)
+        plt.savefig(f'logs/flight_{episode}.png', dpi=200)
