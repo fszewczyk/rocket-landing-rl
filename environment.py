@@ -110,7 +110,7 @@ class Environment(gym.Env):
 
         super(Environment, self).__init__()
 
-        self.canvas_shape = (1000, 400, 3)
+        self.canvas_shape = (1500, 600, 3)
         self.canvas = np.ones(shape=self.canvas_shape) * 1
 
         self.curriculum = Curriculum()
@@ -208,10 +208,10 @@ class Environment(gym.Env):
         cv2.waitKey(1)
 
     def __draw_on_canvas(self):
-        self.canvas = np.ones(shape=self.canvas_shape) * 1
-
-        screen_rocket_pos_y = int(self.rocket.position_y * 40)
-        screen_rocket_pos_x = int((self.rocket.position_x + 2) * 40)
+        screen_rocket_pos_y = int(
+            self.canvas_shape[0] - (self.rocket.position_y * 20)) - self.rocket.icon.shape[0]
+        screen_rocket_pos_x = int(
+            (self.rocket.position_x + 2) * 100) - self.rocket.icon.shape[1]//2
 
         if screen_rocket_pos_x < 0:
             return
@@ -223,8 +223,15 @@ class Environment(gym.Env):
         if screen_rocket_pos_y + self.rocket.icon.shape[0] >= self.canvas_shape[0]:
             return
 
+        self.canvas = np.ones(shape=self.canvas_shape)
+
+        rot_mat = cv2.getRotationMatrix2D(
+            (self.rocket.icon.shape[1]//2, self.rocket.icon.shape[0]//2), math.degrees(-self.rocket.get_signed_angle_with_y_axis()), 1.0)
+        rocket_icon = cv2.warpAffine(
+            self.rocket.icon, rot_mat, self.rocket.icon.shape[1::-1], flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(255, 255, 255))
+
         self.canvas[screen_rocket_pos_y: screen_rocket_pos_y + self.rocket.icon.shape[0],
-                    screen_rocket_pos_x: screen_rocket_pos_x + self.rocket.icon.shape[1]] = self.rocket.icon
+                    screen_rocket_pos_x: screen_rocket_pos_x + self.rocket.icon.shape[1]] = rocket_icon / 255
 
     def __get_state(self):
         """!

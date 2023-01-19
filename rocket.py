@@ -56,7 +56,7 @@ class Rocket(Vector):
         self.flight_log = FlightLog()
 
         self.icon = cv2.imread("icons/rocket.png")
-        self.icon = cv2.resize(self.icon, (100, 20))
+        self.icon = cv2.resize(self.icon, (100, 100))
 
     def update_position(self, tvc):
         """!
