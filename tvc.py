@@ -76,6 +76,10 @@ class TVC(Vector):
         return
 
     def set_rotation_left(self):
+        """!
+        Sets rotation to fully left.
+        """
+
         if self.level > 0.1:
             self.rotate_around_z(-MAX_ROTATION * 2)
             self.level -= MAX_ROTATION * 2
@@ -84,6 +88,10 @@ class TVC(Vector):
             self.level -= MAX_ROTATION
 
     def set_rotation_right(self):
+        """!
+        Sets rotation to fully right.
+        """
+
         if self.level < -0.1:
             self.rotate_around_z(MAX_ROTATION * 2)
             self.level += MAX_ROTATION * 2
@@ -92,6 +100,10 @@ class TVC(Vector):
             self.level += MAX_ROTATION
 
     def set_rotation_middle(self):
+        """! 
+        Sets rotation to middle
+        """
+
         if self.level > 0.1:
             self.rotate_around_z(-MAX_ROTATION)
             self.level -= MAX_ROTATION

@@ -47,21 +47,43 @@ class Curriculum():
         self.max = ma
 
     def disable_random_height(self):
+        """!
+        Disables rocket's spawn at random height.
+        """
+
         self.fixed_height = True
 
     def enable_random_height(self):
+        """!
+        Enables rocket's spawn at random height
+        """
+
         self.fixed_height = False
 
     def get_height(self):
+        """!
+        Calculates spawn height of the rocket based on set parameters.
+
+        @return float: rocket's height
+        """
+
         if self.fixed_height:
             return self.start_height
         else:
             return random.uniform(self.min, self.max)
 
     def disable_x_velocity_reward(self):
+        """!
+        Disable rewards for velocity in x-axis.
+        """
+
         self.x_velocity_reward = False
 
     def enable_x_velocity_reward(self):
+        """!
+        Enable rewards for velocity in x-axis.
+        """
+
         self.x_velocity_reward = True
 
     def disable_turn(self):
@@ -89,9 +111,17 @@ class Curriculum():
         self.random_rotation = False
 
     def enable_landing_target(self):
+        """!
+        Enable rewards for landing at a target.
+        """
+
         self.land_at_target = True
 
     def disable_landing_target(self):
+        """! 
+        Disable rewards for landing at a target.
+        """
+
         self.land_at_target = False
 
 
@@ -190,6 +220,14 @@ class Environment(gym.Env):
         return self.__get_state(), reward, self.rocket.position_y <= 0 or abs(self.rocket.position_x) > 5 or self.rocket.y < 0
 
     def render(self, mode="human"):
+        """!
+        Renders the current state to a human-readable image.
+
+        @param mode (string): "human" to display, "rgb-array" to get a 2D array
+
+        @return: 2D array with image if rgb-array mode is selected.
+        """
+
         self.__draw_on_canvas()
 
         assert mode in ["human", "rgb_array"]
@@ -202,14 +240,22 @@ class Environment(gym.Env):
             return self.canvas
 
     def close(self):
+        """!
+        Destroys all windows.
+        """
+
         cv2.destroyAllWindows()
         cv2.waitKey(1)
 
     def __draw_on_canvas(self):
-        GROUND_HEIGHT = 50
+        """!
+        Draws all objects on canvas to render
+        """
+
+        GROUND_HEIGHT = 60
 
         screen_rocket_pos_y = int(
-            self.canvas_shape[0] - (self.rocket.position_y * 55)) - self.rocket.icon_idle.shape[0] - GROUND_HEIGHT
+            self.canvas_shape[0] - (self.rocket.position_y * 55)) - self.rocket.icon_idle.shape[0]
         screen_rocket_pos_x = int(
             (self.rocket.position_x + 5.5) * 55) - self.rocket.icon_idle.shape[1]//2
 
@@ -246,6 +292,10 @@ class Environment(gym.Env):
 
         self.canvas[self.canvas.shape[0] -
                     GROUND_HEIGHT:self.canvas.shape[0], 0:self.canvas.shape[1]] = 0
+
+        self.canvas[self.canvas.shape[0] -
+                    GROUND_HEIGHT:self.canvas.shape[0] -
+                    GROUND_HEIGHT+10, self.canvas.shape[1]//2-20:self.canvas.shape[1]//2+20, 2] = 255
 
     def __get_state(self):
         """!
