@@ -75,5 +75,29 @@ class TVC(Vector):
 
         return
 
+    def set_rotation_left(self):
+        if self.level > 0.1:
+            self.rotate_around_z(-MAX_ROTATION * 2)
+            self.level -= MAX_ROTATION * 2
+        elif self.level > -0.1:
+            self.rotate_around_z(-MAX_ROTATION)
+            self.level -= MAX_ROTATION
+
+    def set_rotation_right(self):
+        if self.level < -0.1:
+            self.rotate_around_z(MAX_ROTATION * 2)
+            self.level += MAX_ROTATION * 2
+        elif self.level < 0.1:
+            self.rotate_around_z(MAX_ROTATION)
+            self.level += MAX_ROTATION
+
+    def set_rotation_middle(self):
+        if self.level > 0.1:
+            self.rotate_around_z(-MAX_ROTATION)
+            self.level -= MAX_ROTATION
+        elif self.level < -0.1:
+            self.rotate_around_z(MAX_ROTATION)
+            self.level += MAX_ROTATION
+
     def __str__(self):
         return f"Thrust: {self.current_thrust} N, Direction: ({self.x:.3f}, {self.y:.3f})"
