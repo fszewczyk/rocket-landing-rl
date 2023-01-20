@@ -140,7 +140,7 @@ class Environment(gym.Env):
 
         super(Environment, self).__init__()
 
-        self.canvas_shape = (1500, 600, 3)
+        self.canvas_shape = (1500, 1200, 3)
         self.canvas = np.ones(shape=self.canvas_shape) * 1
 
         self.curriculum = Curriculum()
@@ -213,11 +213,11 @@ class Environment(gym.Env):
                 reward -= 0.5 * abs(self.rocket.velocity_x)
 
             if self.curriculum.land_at_target:
-                reward -= 0.3 * abs(self.rocket.position_x)
+                reward -= 0.05 * abs(self.rocket.position_x)
 
         self.timestep += TIMESTEP
 
-        return self.__get_state(), reward, self.rocket.position_y <= 0 or abs(self.rocket.position_x) > 5 or self.rocket.y < 0
+        return self.__get_state(), reward, self.rocket.position_y <= 0 or abs(self.rocket.position_x) > 10 or self.rocket.y < 0
 
     def render(self, mode="human"):
         """!
@@ -257,7 +257,7 @@ class Environment(gym.Env):
         screen_rocket_pos_y = int(
             self.canvas_shape[0] - (self.rocket.position_y * 55)) - self.rocket.icon_idle.shape[0]
         screen_rocket_pos_x = int(
-            (self.rocket.position_x + 5.5) * 55) - self.rocket.icon_idle.shape[1]//2
+            (self.rocket.position_x + 11) * 55) - self.rocket.icon_idle.shape[1]//2
 
         if screen_rocket_pos_x < 0:
             return
