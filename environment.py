@@ -35,13 +35,13 @@ class Curriculum():
         """!
         Sets the starting height of the rocket to a fixed number
         """
+
         self.start_height = STARTING_HEIGHT
 
     def set_random_height(self, mi, ma):
         """!
         Sets the starting height of the rocket to a fixed number
         """
-        self.start_height = STARTING_HEIGHT
 
         self.min = mi
         self.max = ma
@@ -59,6 +59,24 @@ class Curriculum():
         """
 
         self.fixed_height = False
+        self.increasing_height = False
+
+    def disable_increasing_height(self):
+        """!
+        Disables rocket's spawn at at increasing height
+        """
+
+        self.fixed_height = True
+
+    def enable_increasing_height(self, rate=0.005):
+        """!
+        Enables rocket's spawn at an increasing height
+        """
+
+        self.fixed_height = False
+        self.increasing_height = True
+
+        self.height_increase_rate = rate
 
     def get_height(self):
         """!
@@ -70,7 +88,9 @@ class Curriculum():
         if self.fixed_height:
             return self.start_height
         else:
-            return random.uniform(self.min, self.max)
+            if self.increasing_height:
+                self.max += self.height_increase_rate
+            return random.uniform(self.min, min(10, self.max))
 
     def disable_x_velocity_reward(self):
         """!
@@ -146,6 +166,8 @@ class Environment(gym.Env):
         self.curriculum = Curriculum()
         self.reset()
 
+        self.action_space = gym.spaces.Discrete(4)
+
     def reset(self):
         """!
         Resets the environment to conditions defined
@@ -166,8 +188,8 @@ class Environment(gym.Env):
 
         self.rocket = Rocket(start_position, self.curriculum.get_height(), WEIGHT,
                              MOMENT_OF_INERTIA, CENTER_OF_MASS, dir_x=start_dx, dir_y=start_dy)
-        self.tvc = TVC(MAX_THRUST, THRUST_CHANGE_PER_SECOND,
-                       ROTATION_SPEED_PER_SECOND, dir_x=start_dx, dir_y=start_dy)
+        self.tvc = TVC(MAX_THRUST, MAX_ROTATION,
+                       dir_x=start_dx, dir_y=start_dy)
 
         self.timestep = 0
 
@@ -188,36 +210,38 @@ class Environment(gym.Env):
 
         if action == Action.LEFT:
             self.tvc.set_rotation_left()
-            self.tvc.current_thrust = MAX_THRUST
+            self.tvc.set_max_thrust()
         elif action == Action.MIDDLE:
             self.tvc.set_rotation_middle()
-            self.tvc.current_thrust = MAX_THRUST
+            self.tvc.set_max_thrust()
         elif action == Action.RIGHT:
             self.tvc.set_rotation_right()
-            self.tvc.current_thrust = MAX_THRUST
+            self.tvc.set_max_thrust()
         else:
-            self.tvc.current_thrust = 0
+            self.tvc.set_min_thrust()
 
         self.rocket.update_position(self.tvc)
         self.rocket.log(self.tvc, self.timestep)
 
-        reward = 0
-        reward -= 0.0001
+        reward = -PENALTY_PER_SECOND * TIMESTEP
 
         if self.rocket.position_y <= 0:
-            reward = 6 + self.rocket.velocity_y - \
-                self.rocket.get_unsigned_angle_with_y_axis() - \
-                0.2*abs(self.rocket.angular_velocity)
+            reward = REWARD_LANDING + self.rocket.velocity_y - \
+                PENALTY_PER_RADIAN_AT_LANDING * abs(self.rocket.get_unsigned_angle_with_y_axis() + 1) - \
+                PENALTY_PER_ANGULAR_VELOCITY_AT_LANDING * \
+                abs(self.rocket.angular_velocity)
 
             if self.curriculum.x_velocity_reward:
-                reward -= 0.5 * abs(self.rocket.velocity_x)
+                reward -= PENALTY_PER_HORIZONTAL_VELOCITY * \
+                    abs(self.rocket.velocity_x)
 
             if self.curriculum.land_at_target:
-                reward -= 0.05 * abs(self.rocket.position_x)
+                reward -= PENALTY_PER_HORIZONTAL_POSITION * \
+                    abs(self.rocket.position_x)
 
         self.timestep += TIMESTEP
 
-        return self.__get_state(), reward, self.rocket.position_y <= 0 or abs(self.rocket.position_x) > 10 or self.rocket.y < 0
+        return self.__get_state(), reward, self.rocket.position_y <= 0 or abs(self.rocket.position_x) > 10
 
     def render(self, mode="human"):
         """!
@@ -308,7 +332,6 @@ class Environment(gym.Env):
         state.append(STARTING_HEIGHT - self.rocket.position_y)
         state.append(self.rocket.velocity_y)
         state.append(self.rocket.velocity_x)
-        state.append(self.rocket.position_x)
         state.append(self.rocket.angular_velocity)
         state.append(self.rocket.get_signed_angle_with_y_axis())
 

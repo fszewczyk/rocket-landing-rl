@@ -7,70 +7,26 @@ class TVC(Vector):
     Implements a thrust-vector control for the rocket.
     """
 
-    def __init__(self, max_thrust, thrust_step, rotation_speed, dir_x=0, dir_y=1):
+    def __init__(self, max_thrust, tvc_range, dir_x=0, dir_y=1):
         """!
         Constructs the TVC mount
 
         @param max_thrust (float): Maximum thrust of the engine
-        @param thrust_step (float): Rate of change of the thrust in N/s
         @param rotation_speed (float): Speed of engine mount rotation in rad/s
         """
 
         super(TVC, self).__init__(x=dir_x, y=dir_y)
 
         self.max_thrust = max_thrust
-        self.thrust_step = thrust_step
-        self.rotation_speed = rotation_speed
+        self.tvc_range = tvc_range
 
         self.current_thrust = 0
 
         self.level = 0
 
-    def increase_thrust(self):
-        """!
-        Increases the thrust of the engine.
-        """
-
-        self.current_thrust = min(
-            self.current_thrust + (self.thrust_step * TIMESTEP), self.max_thrust)
-
-    def decrease_thrust(self):
-        """!
-        Decreases the thrust of the engine.
-        """
-
-        self.current_thrust = max(
-            0, self.current_thrust - (self.thrust_step * TIMESTEP))
-
     def stay_thrust(self):
         """!
         Leaves the thrust of the engine as it is.
-        """
-
-        return
-
-    # TODO: put limit on TVC rotation
-    def rotate_left(self):
-        """!
-        Rotates the engine mount to the left around z-axis
-        """
-
-        if self.level > -MAX_ROTATION:
-            self.rotate_around_z(self.rotation_speed * TIMESTEP)
-            self.level -= TIMESTEP * ROTATION_SPEED_PER_SECOND
-
-    def rotate_right(self):
-        """!
-        Rotates the engine mount to the left around z-axis
-        """
-
-        if self.level < MAX_ROTATION:
-            self.rotate_around_z(-self.rotation_speed * TIMESTEP)
-            self.level += TIMESTEP * ROTATION_SPEED_PER_SECOND
-
-    def rotate_stay(self):
-        """!
-        Leaves the engine rotation as it is.
         """
 
         return
@@ -81,11 +37,11 @@ class TVC(Vector):
         """
 
         if self.level > 0.1:
-            self.rotate_around_z(-MAX_ROTATION * 2)
-            self.level -= MAX_ROTATION * 2
+            self.rotate_around_z(-self.tvc_range * 2)
+            self.level -= self.tvc_range * 2
         elif self.level > -0.1:
-            self.rotate_around_z(-MAX_ROTATION)
-            self.level -= MAX_ROTATION
+            self.rotate_around_z(-self.tvc_range)
+            self.level -= self.tvc_range
 
     def set_rotation_right(self):
         """!
@@ -93,11 +49,11 @@ class TVC(Vector):
         """
 
         if self.level < -0.1:
-            self.rotate_around_z(MAX_ROTATION * 2)
-            self.level += MAX_ROTATION * 2
+            self.rotate_around_z(self.tvc_range * 2)
+            self.level += self.tvc_range * 2
         elif self.level < 0.1:
-            self.rotate_around_z(MAX_ROTATION)
-            self.level += MAX_ROTATION
+            self.rotate_around_z(self.tvc_range)
+            self.level += self.tvc_range
 
     def set_rotation_middle(self):
         """! 
@@ -105,11 +61,25 @@ class TVC(Vector):
         """
 
         if self.level > 0.1:
-            self.rotate_around_z(-MAX_ROTATION)
-            self.level -= MAX_ROTATION
+            self.rotate_around_z(-self.tvc_range)
+            self.level -= self.tvc_range
         elif self.level < -0.1:
-            self.rotate_around_z(MAX_ROTATION)
-            self.level += MAX_ROTATION
+            self.rotate_around_z(self.tvc_range)
+            self.level += self.tvc_range
+
+    def set_max_thrust(self):
+        """!
+        Turns on maximum thrust of the engine
+        """
+
+        self.current_thrust = self.max_thrust
+
+    def set_min_thrust(self):
+        """!
+        Turns off the engine
+        """
+
+        self.current_thrust = 0
 
     def __str__(self):
         return f"Thrust: {self.current_thrust} N, Direction: ({self.x:.3f}, {self.y:.3f})"

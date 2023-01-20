@@ -3,6 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
+import math
+import random
+
+from constants import *
 
 
 class QNetwork(nn.Module):
@@ -20,9 +24,9 @@ class QNetwork(nn.Module):
         super(QNetwork, self).__init__()
 
         # TODO: check different types of layers
-        self.layer1 = nn.Linear(*input_dims, layer1_dims)
-        self.layer2 = nn.Linear(layer1_dims, layer2_dims)
-        self.layer3 = nn.Linear(layer1_dims, n_actions)
+        self.fc1 = nn.Linear(*input_dims, layer1_dims)
+        # self.fc2 = nn.Linear(layer1_dims, layer2_dims)
+        self.fc3 = nn.Linear(layer1_dims, n_actions)
 
         # TODO: Check different optimizer and loss
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
@@ -31,16 +35,21 @@ class QNetwork(nn.Module):
         self.to(self.device)
 
     def feed_forward(self, state):
-        # TODO: check different activations
-        x = T.tanh(self.layer1(state))
-        x = T.tanh(self.layer2(x))
-        actions = self.layer3(x)
+        """!
+        Calculates the Q-values for each action.
+
+        @param state (list): current environment's state
+        """
+
+        x = T.tanh(self.fc1(state))
+        # x = T.tanh(self.fc2(x))
+        actions = self.fc3(x)
 
         return actions
 
 
 class Agent():
-    def __init__(self, gamma, epsilon, lr, input_dims, batch_size, n_actions, max_mem_size=25000, eps_min=0.01, eps_dec=3e-4):
+    def __init__(self, gamma, epsilon, lr, input_dims, batch_size, n_actions, max_mem_size=25000, eps_min=0.05, eps_dec=3e-4, exploration=Exploration.EPSILON_GREEDY):
         """!
         Initializes an Agent. 
         Note that Agent is seperate from the Deep Q Network.
@@ -54,12 +63,17 @@ class Agent():
         @param max_mem_size (float): Size of memory replay buffer
         @param eps_end      (float): Minimum size of epsilon in the epsilon-greedy exploration strategy
         @param eps_dec      (float): Decrease step of epsilon in the epsilon-greedy exploration strategy
+        @param exploration      (Exploration): Exploration strategy, e.g. EPSILON_GREEDY or SOFTMAX
         """
 
         self.gamma = gamma
+
+        self.exploration = exploration
+
         self.epsilon = epsilon
         self.eps_min = eps_min
         self.eps_dec = eps_dec
+
         self.lr = lr
         self.action_space = [i for i in range(n_actions)]
         self.buffer_size = max_mem_size
@@ -106,15 +120,10 @@ class Agent():
         @return int: Action to take
         """
 
-        # TODO: Implement softmax exploration
-        if np.random.random() > self.epsilon:
-            state = T.tensor([observation]).to(self.q_eval.device)  # why []?
-            actions = self.q_eval.feed_forward(state)
-            action = T.argmax(actions).item()
-        else:
-            action = np.random.choice(self.action_space)
-
-        return action
+        if self.exploration == Exploration.EPSILON_GREEDY:
+            return self.__choose_action_eps_greedy(observation)
+        elif self.exploration == Exploration.SOFTMAX:
+            return self.__choose_action_softmax(observation)
 
     def learn(self):
         """! 
@@ -153,3 +162,54 @@ class Agent():
 
         self.epsilon = self.epsilon - \
             self.eps_dec if self.epsilon > self.eps_min else self.eps_min
+
+    def __choose_action_eps_greedy(self, observation):
+        """!
+        Chooses agent's action according to epsilon greedy strategy.
+
+        @param observation (list): current environment's state
+
+        return int: action to take
+        """
+
+        if np.random.random() > self.epsilon:
+            state = T.tensor([observation]).to(self.q_eval.device)  # why []?
+            actions = self.q_eval.feed_forward(state)
+            action = T.argmax(actions).item()
+        else:
+            action = np.random.choice(self.action_space)
+
+        return action
+
+    def __choose_action_softmax(self, observation):
+        """!
+        Chooses agent's action according to softmax exploration strategy.
+
+        @param observation (list): current environment's state
+
+        return int: action to take
+        """
+
+        state = T.tensor([observation]).to(self.q_eval.device)  # why []?
+        actions = self.q_eval.feed_forward(state)
+        action = T.argmax(actions).item()
+
+        probabilites = []
+        q_values = []
+
+        for a in actions[0]:
+            q_values.append(a.item())
+
+        for q in q_values:
+            try:
+                probabilites.append(
+                    math.exp(q / max(0.05, self.epsilon)))
+            except:
+                print(q, self.epsilon, self.eps_min)
+
+        s = sum(probabilites)
+
+        for i, p in enumerate(probabilites):
+            probabilites[i] /= s
+
+        return random.choices(self.action_space, weights=probabilites)[0]

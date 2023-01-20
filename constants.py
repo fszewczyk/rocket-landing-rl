@@ -1,36 +1,33 @@
 from enum import IntEnum
 
 # Environment
-STARTING_HEIGHT = 1.4
+STARTING_HEIGHT = 1
 GRAVITY = 9.81
-TIMESTEP = 0.035
+TIMESTEP = 0.02
 
 # Rocket
-WEIGHT = 1
-CENTER_OF_MASS = 0.5
-MOMENT_OF_INERTIA = 0.3
+WEIGHT = 5.5e5
+CENTER_OF_MASS = 11
+MOMENT_OF_INERTIA = 2.15e6
 
 # TVC
-MAX_THRUST = 15.5
-THRUST_CHANGE_PER_SECOND = 20
+MAX_THRUST = 7.6e6
 ROTATION_SPEED_PER_SECOND = 0.06
 MAX_ROTATION = 0.15
 
-# Rewards
-PENALTY_PER_SECOND = 1
-PENALTY_PER_SECOND_GOING_UP = 10
-PENALTY_PER_RADIAN_OFF_PER_SECOND = 10
-PENALTY_PER_RADIAN_AT_LANDING = 1.5
-PENALTY_PER_ANGULAR_SPEED_AT_LANDING = 0.1
-
-PENALTY_PER_M_S_AT_LANDING = 1
-PENALTY_PER_METER_OF_TARGET = 1
-
-REWARD_LANDED = 10
+# Reward
+REWARD_LANDING = 10
+PENALTY_PER_SECOND = 0.5
+PENALTY_PER_RADIAN_AT_LANDING = 1
+PENALTY_PER_ANGULAR_VELOCITY_AT_LANDING = 0.2
+PENALTY_PER_HORIZONTAL_VELOCITY = 0.5
+PENALTY_PER_HORIZONTAL_POSITION = 0.05
 
 # Curriculum
 EPS_DECREASE = 1e-4
 EPS_RESTART = 0.65
+
+TEMP_DECREASE = 1e-4
 
 
 class Action(IntEnum):
@@ -45,21 +42,10 @@ class Action(IntEnum):
     NOTHING = 3
 
 
-class ThrustAction(IntEnum):
+class Exploration(IntEnum):
     """!
-    Enumeration of possible thrust actions.
+    Enumeration of possible exploration strategies.
     """
 
-    LOWER = 0
-    STAY = 1
-    HIGHER = 2
-
-
-class EngineZAction(IntEnum):
-    """!
-    Enumeration of possible engine mount actions in z-axis.
-    """
-
-    LEFT = 0
-    STAY = 1
-    RIGHT = 2
+    EPSILON_GREEDY = 0
+    SOFTMAX = 1
