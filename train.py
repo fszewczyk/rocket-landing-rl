@@ -13,8 +13,9 @@ env = Environment()
 env.curriculum.enable_turn()
 env.curriculum.enable_random_starting_rotation()
 
-agent = Agent(gamma=0.99, epsilon=1.0, lr=0.001,
-              input_dims=[5], batch_size=64, n_actions=4, eps_dec=TEMP_DECREASE, eps_min=0.001, exploration=Exploration.EPSILON_GREEDY)
+lr = 0.004
+agent = Agent(gamma=0.99, epsilon=0.1, lr=lr,
+              input_dims=[5], batch_size=64, n_actions=4, eps_dec=TEMP_DECREASE, eps_min=0.01, exploration=Exploration.EPSILON_GREEDY)
 
 
 scores = []
@@ -25,6 +26,9 @@ n_games = 100000
 
 dash = Dashboard()
 
+agent.q_eval.load_state_dict(torch.load("models/model_1800"))
+env.curriculum.set_random_height(1, 10)
+env.curriculum.enable_increasing_height()
 
 for i in range(n_games):
     score = 0
@@ -32,11 +36,11 @@ for i in range(n_games):
 
     observation = env.reset()
 
-    if i == 200:
+    if i == 250:
         env.curriculum.set_random_height(1, 10)
         env.curriculum.enable_increasing_height()
 
-    if i == 500:
+    if i == 1000:
         agent.epsilon = 0.2
         env.curriculum.enable_x_velocity_reward()
 
@@ -47,13 +51,18 @@ for i in range(n_games):
 
         agent.store_transition(observation, action,
                                reward, new_observation, done)
-        agent.learn()
+        # agent.learn()
 
         observation = new_observation
+
+        env.render()
 
     if i % 100 == 0:
         dash.plot_log(env.rocket.flight_log, episode=i)
         torch.save(agent.q_eval.state_dict(), f"models/model_{i}")
+
+        agent.q_eval.optimizer.param_groups[0]["lr"] = lr
+        lr *= 0.9
 
     scores.append(score)
 

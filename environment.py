@@ -226,7 +226,7 @@ class Environment(gym.Env):
         reward = -PENALTY_PER_SECOND * TIMESTEP
 
         if self.rocket.position_y <= 0:
-            reward = REWARD_LANDING - abs(self.rocket.velocity_y + 0.5) - \
+            reward = REWARD_LANDING - abs(self.rocket.velocity_y + 1) - \
                 PENALTY_PER_RADIAN_AT_LANDING * self.rocket.get_unsigned_angle_with_y_axis() - \
                 PENALTY_PER_ANGULAR_VELOCITY_AT_LANDING * \
                 abs(self.rocket.angular_velocity)
@@ -276,10 +276,10 @@ class Environment(gym.Env):
         Draws all objects on canvas to render
         """
 
-        GROUND_HEIGHT = 135
+        GROUND_HEIGHT = 150
 
         screen_rocket_pos_y = int(
-            self.canvas_shape[0] - (self.rocket.position_y * 55)) - self.rocket.icon_idle.shape[0] // 2 - GROUND_HEIGHT
+            self.canvas_shape[0] - (self.rocket.position_y * 110)) - self.rocket.icon_idle.shape[0] // 2 - GROUND_HEIGHT
         screen_rocket_pos_x = int(
             (self.rocket.position_x + 11) * 55) - self.rocket.icon_idle.shape[1]//2
 
@@ -324,7 +324,7 @@ class Environment(gym.Env):
         """
 
         state = []
-        state.append(STARTING_HEIGHT - self.rocket.position_y)
+        state.append(self.rocket.position_y)
         state.append(self.rocket.velocity_y)
         state.append(self.rocket.velocity_x)
         state.append(self.rocket.angular_velocity)

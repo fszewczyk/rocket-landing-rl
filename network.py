@@ -25,7 +25,7 @@ class QNetwork(nn.Module):
 
         # TODO: check different types of layers
         self.fc1 = nn.Linear(*input_dims, layer1_dims)
-        # self.fc2 = nn.Linear(layer1_dims, layer2_dims)
+        self.fc2 = nn.Linear(layer1_dims, layer2_dims)
         self.fc3 = nn.Linear(layer1_dims, n_actions)
 
         # TODO: Check different optimizer and loss
@@ -42,7 +42,7 @@ class QNetwork(nn.Module):
         """
 
         x = T.tanh(self.fc1(state))
-        # x = T.tanh(self.fc2(x))
+        x = T.tanh(self.fc2(x))
         actions = self.fc3(x)
 
         return actions

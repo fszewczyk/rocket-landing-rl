@@ -57,7 +57,7 @@ class Rocket(Vector):
 
         rocket_width = 250
 
-        self.icon_idle = cv2.imread("icons/rocket_idle.png", )
+        self.icon_idle = cv2.imread("icons/rocket_idle.png")
         self.icon_idle = cv2.resize(
             self.icon_idle, (rocket_width, rocket_width))
 
