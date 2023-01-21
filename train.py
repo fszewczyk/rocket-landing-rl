@@ -16,6 +16,7 @@ env.curriculum.enable_random_starting_rotation()
 agent = Agent(gamma=0.99, epsilon=1.0, lr=0.001,
               input_dims=[5], batch_size=64, n_actions=4, eps_dec=TEMP_DECREASE, eps_min=0.001, exploration=Exploration.EPSILON_GREEDY)
 
+
 scores = []
 velocities = []
 angles = []
@@ -31,8 +32,8 @@ for i in range(n_games):
 
     observation = env.reset()
 
-    if i == 300:
-        env.curriculum.set_random_height(1, 1)
+    if i == 200:
+        env.curriculum.set_random_height(1, 10)
         env.curriculum.enable_increasing_height()
 
     if i == 500:

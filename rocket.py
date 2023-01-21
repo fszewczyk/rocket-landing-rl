@@ -55,17 +55,22 @@ class Rocket(Vector):
 
         self.flight_log = FlightLog()
 
-        self.icon_idle = cv2.imread("icons/rocket_idle.png")
-        self.icon_idle = cv2.resize(self.icon_idle, (150, 150))
+        rocket_width = 250
+
+        self.icon_idle = cv2.imread("icons/rocket_idle.png", )
+        self.icon_idle = cv2.resize(
+            self.icon_idle, (rocket_width, rocket_width))
 
         self.icon_mid = cv2.imread("icons/rocket_middle.png")
-        self.icon_mid = cv2.resize(self.icon_mid, (150, 150))
+        self.icon_mid = cv2.resize(self.icon_mid, (rocket_width, rocket_width))
 
         self.icon_right = cv2.imread("icons/rocket_right.png")
-        self.icon_right = cv2.resize(self.icon_right, (150, 150))
+        self.icon_right = cv2.resize(
+            self.icon_right, (rocket_width, rocket_width))
 
         self.icon_left = cv2.imread("icons/rocket_left.png")
-        self.icon_left = cv2.resize(self.icon_left, (150, 150))
+        self.icon_left = cv2.resize(
+            self.icon_left, (rocket_width, rocket_width))
 
     def update_position(self, tvc):
         """!
