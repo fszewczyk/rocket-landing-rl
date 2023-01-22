@@ -20,7 +20,8 @@ All the environment's functionalities are described [here](url).
 ### Minimal usage
 
 ```python
-from rocketgym import Environment
+from rocketgym.environment import Environment
+from rocketgym.network import Agent
 
 env = Environment()
 agent = Agent(gamma=0.99, epsilon=1, lr=0.001,
