@@ -25,7 +25,6 @@ class QNetwork(nn.Module):
 
         # TODO: check different types of layers
         self.fc1 = nn.Linear(*input_dims, layer1_dims)
-        self.fc2 = nn.Linear(layer1_dims, layer2_dims)
         self.fc3 = nn.Linear(layer1_dims, n_actions)
 
         # TODO: Check different optimizer and loss
@@ -42,14 +41,13 @@ class QNetwork(nn.Module):
         """
 
         x = T.tanh(self.fc1(state))
-        x = T.tanh(self.fc2(x))
         actions = self.fc3(x)
 
         return actions
 
 
 class Agent():
-    def __init__(self, gamma, epsilon, lr, input_dims, batch_size, n_actions, max_mem_size=25000, eps_min=0.05, eps_dec=3e-4, exploration=Exploration.EPSILON_GREEDY):
+    def __init__(self, gamma, epsilon, lr, input_dims, batch_size, n_actions, max_mem_size=25000, exploration_min=0.01, exploration_dec=3e-4, exploration=Exploration.EPSILON_GREEDY):
         """!
         Initializes an Agent. 
         Note that Agent is seperate from the Deep Q Network.
@@ -61,9 +59,9 @@ class Agent():
         @param batch_size   (int): Batch size
         @param n_actions    (int): Size of the action space
         @param max_mem_size (float): Size of memory replay buffer
-        @param eps_end      (float): Minimum size of epsilon in the epsilon-greedy exploration strategy
-        @param eps_dec      (float): Decrease step of epsilon in the epsilon-greedy exploration strategy
-        @param exploration      (Exploration): Exploration strategy, e.g. EPSILON_GREEDY or SOFTMAX
+        @param exploration_min      (float): Minimum size of epsilon in the epsilon-greedy exploration strategy
+        @param exploration_dec      (float): Decrease step of epsilon in the epsilon-greedy exploration strategy
+        @param exploration  (Exploration): Exploration strategy, e.g. EPSILON_GREEDY or SOFTMAX
         """
 
         self.gamma = gamma
@@ -71,8 +69,8 @@ class Agent():
         self.exploration = exploration
 
         self.epsilon = epsilon
-        self.eps_min = eps_min
-        self.eps_dec = eps_dec
+        self.exploration_min = exploration_min
+        self.exploration_dec = exploration_dec
 
         self.lr = lr
         self.action_space = [i for i in range(n_actions)]
@@ -161,7 +159,7 @@ class Agent():
         self.q_eval.optimizer.step()
 
         self.epsilon = self.epsilon - \
-            self.eps_dec if self.epsilon > self.eps_min else self.eps_min
+            self.exploration_dec if self.epsilon > self.exploration_min else self.exploration_min
 
     def __choose_action_eps_greedy(self, observation):
         """!
@@ -200,16 +198,20 @@ class Agent():
         for a in actions[0]:
             q_values.append(a.item())
 
+        a = False
         for q in q_values:
             try:
                 probabilites.append(
-                    math.exp(q / max(0.05, self.epsilon)))
+                    math.exp((q-sum(q_values)/len(q_values)) / self.epsilon))
             except:
-                print(q, self.epsilon, self.eps_min)
+                probabilites.append(1e5)  # dealing with overflow
 
         s = sum(probabilites)
 
         for i, p in enumerate(probabilites):
             probabilites[i] /= s
+
+        if a or random.uniform(0, 1) < 0.01:
+            print(a, probabilites)
 
         return random.choices(self.action_space, weights=probabilites)[0]

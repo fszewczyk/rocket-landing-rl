@@ -1,5 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib
+import os
+import pandas as pd
+import numpy as np
+import math
 
 
 class Dashboard():
@@ -7,8 +11,10 @@ class Dashboard():
     Dashboard module taking care of data visualization
     """
 
-    def __init__(self):
+    def __init__(self, fn=None):
         super().__init__()
+
+        self.fn = fn
 
     def plot_log(self, log, episode=None):
         """!
@@ -66,4 +72,53 @@ class Dashboard():
         br.set_xlabel("Time (s)")
         br.set_ylabel("Thrust (N)")
 
-        plt.savefig(f'logs/flight_{episode}.png', dpi=200)
+        plt.savefig(f'logs/plots/flight_{episode}.png', dpi=200)
+
+    def write_header_to_file(self, string):
+        with open(os.path.join("logs", "data", self.fn), 'w') as f:
+            f.write(f"{string}\n")
+            f.close()
+
+    def write_record_to_file(self, args):
+        with open(os.path.join("logs", "data", self.fn), 'a') as f:
+            for i, arg in enumerate(args):
+                if i < len(args) - 1:
+                    f.write(f"{arg},")
+                else:
+                    f.write(f"{arg}\n")
+
+            f.close()
+
+    def plot_rewards(self, dirs):
+        plt.plot([200, 200], [-4, 15], color=(0, 0, 0, 0.5))
+        plt.plot([1100, 1100], [-4, 15], color=(0, 0, 0, 0.5))
+        plt.xlim((0, 2000))
+        plt.ylim((-3, 14))
+        plt.xlabel("Episode")
+        plt.ylabel("Average reward")
+
+        for i, d in enumerate(dirs):
+            perf = []
+            episodes = []
+            for f in os.listdir(d):
+                data = pd.read_csv(os.path.join(d, f))
+
+                scores = data['score'].tolist()
+                episodes = data['episode'].tolist()
+                algo = data['algorithm'].tolist()
+                expl = data['exploration_strategy'].tolist()
+
+                scores = np.convolve(
+                    scores, np.ones(20)/20, mode='valid')
+
+                if len(scores) > 1900:
+                    perf.append(scores)
+
+            err = np.std(perf, axis=0)  # / math.sqrt(len(os.listdir(d)))
+            p = plt.plot(range(len(perf[0])), np.mean(
+                perf, axis=0), label=d[10:], linewidth=3)
+            plt.fill_between(range(len(perf[0])), np.mean(
+                perf, axis=0) + err, np.mean(perf, axis=0) - err, alpha=0.25, color=p[0].get_color())
+
+        plt.legend()
+        plt.show()

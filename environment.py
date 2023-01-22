@@ -179,8 +179,9 @@ class Environment(gym.Env):
         start_dx = 0
         start_dy = 1
         if self.curriculum.random_rotation:
-            start_dx = random.uniform(-0.5, 0.5)
-            start_dy = random.uniform(0.5, 1)
+            rotation = random.uniform(math.pi / 4, math.pi * 3 / 4)
+            start_dx = math.cos(rotation)
+            start_dy = math.sin(rotation)
 
         start_position = 0
         if self.curriculum.land_at_target:
@@ -296,8 +297,10 @@ class Environment(gym.Env):
         self.canvas = np.ones(shape=self.canvas_shape)
         self.canvas[:, :] = self.background / 255
 
+        angle = math.atan2(self.rocket.y, self.rocket.x) - math.pi/2
+
         rot_mat = cv2.getRotationMatrix2D(
-            (self.rocket.icon_idle.shape[1]//2, self.rocket.icon_idle.shape[0]//2), math.degrees(-self.rocket.get_signed_angle_with_y_axis()), 1.0)
+            (self.rocket.icon_idle.shape[1]//2, self.rocket.icon_idle.shape[0]//2), math.degrees(angle), 1.0)
 
         if self.tvc.current_thrust == 0:
             rocket_icon = cv2.warpAffine(
