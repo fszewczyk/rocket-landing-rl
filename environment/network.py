@@ -6,7 +6,7 @@ import numpy as np
 import math
 import random
 
-from constants import *
+from environment.constants import *
 
 
 class QNetwork(nn.Module):

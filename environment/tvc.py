@@ -1,5 +1,5 @@
-from vector import Vector
-from constants import *
+from environment.vector import Vector
+from environment.constants import *
 
 
 class TVC(Vector):

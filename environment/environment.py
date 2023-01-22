@@ -4,9 +4,9 @@ import numpy as np
 import gym
 import cv2
 
-from rocket import Rocket
-from tvc import TVC
-from constants import *
+from environment.rocket import Rocket
+from environment.tvc import TVC
+from environment.constants import *
 
 
 class Curriculum():
@@ -161,7 +161,7 @@ class Environment(gym.Env):
         super(Environment, self).__init__()
 
         self.canvas_shape = (1500, 1200, 3)
-        self.background = cv2.imread("icons/bg.png")
+        self.background = cv2.imread("img/bg.png")
 
         self.curriculum = Curriculum()
         self.reset()

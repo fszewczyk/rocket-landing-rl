@@ -2,8 +2,8 @@ _Part of [SHKYERA](https://youtu.be/Kb4bNZGqKyE) project_
 
 ## _Still in development_
 
-![background](icons/shkyera.png "Shkyera Aerospace")
-![Rocket landing](icons/landing_anim.gif)
+![background](img/shkyera.png "Shkyera Aerospace")
+![Rocket landing](img/landing_anim.gif)
 
 # Rocket Landing - Reinforcement Learning
 
@@ -40,7 +40,7 @@ In the `train.py` you can see, how agent training is implemented. All you need t
 ## Diagnostics
 
 If you want to make pretty plots, like this one
-![pretty plot](icons/pretty_plot.png)
+![pretty plot](img/pretty_plot.png)
 feel free to use `diagnostics.py`. All you need to know to do that is described in the script itself.
 
 _**For a detailed explanation of the environment and the learning algorithms I used, see [here](url).**_

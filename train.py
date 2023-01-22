@@ -1,15 +1,15 @@
+import environment.constants
+from environment.constants import *
+from environment.dashboard import Dashboard
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 
-from environment import Environment
-from network import Agent
-from dashboard import Dashboard
-from constants import *
-import constants
+from environment.environment import Environment
+from environment.network import Agent
 
-for iteration in range(1, 10):
+for iteration in range(20, 30):
     env = Environment()
     env.curriculum.enable_turn()
     env.curriculum.enable_random_starting_rotation()
@@ -45,7 +45,7 @@ for iteration in range(1, 10):
 
         while not done:
             action = agent.choose_action(observation)
-            new_observation, reward, done = env.step(action, i)
+            new_observation, reward, done = env.step(action)
             score += reward
 
             agent.store_transition(observation, action,

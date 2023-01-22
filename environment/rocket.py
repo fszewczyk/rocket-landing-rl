@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 import math
 
-from vector import Vector
-from constants import *
+from environment.vector import Vector
+from environment.constants import *
 
 import cv2
 
@@ -57,18 +57,18 @@ class Rocket(Vector):
 
         rocket_width = 250
 
-        self.icon_idle = cv2.imread("icons/rocket_idle.png")
+        self.icon_idle = cv2.imread("img/rocket_idle.png")
         self.icon_idle = cv2.resize(
             self.icon_idle, (rocket_width, rocket_width))
 
-        self.icon_mid = cv2.imread("icons/rocket_middle.png")
+        self.icon_mid = cv2.imread("img/rocket_middle.png")
         self.icon_mid = cv2.resize(self.icon_mid, (rocket_width, rocket_width))
 
-        self.icon_right = cv2.imread("icons/rocket_right.png")
+        self.icon_right = cv2.imread("img/rocket_right.png")
         self.icon_right = cv2.resize(
             self.icon_right, (rocket_width, rocket_width))
 
-        self.icon_left = cv2.imread("icons/rocket_left.png")
+        self.icon_left = cv2.imread("img/rocket_left.png")
         self.icon_left = cv2.resize(
             self.icon_left, (rocket_width, rocket_width))
 

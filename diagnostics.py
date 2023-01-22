@@ -1,4 +1,4 @@
-from dashboard import Dashboard
+from environment.dashboard import Dashboard
 
 dash = Dashboard()
 
