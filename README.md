@@ -17,6 +17,25 @@ pip install rocket-landing-gym
 
 All the environment's functionalities are described [here](url).
 
+### Minimal usage
+
+```python
+from rocketgym import Environment
+
+env = Environment()
+agent = Agent(gamma=0.99, epsilon=1, lr=0.001,
+                  input_dims=[5], batch_size=64)
+
+observation = env.reset()
+done = False
+
+while not done:
+    action = agent.choose_action(observation)
+    new_observation, reward, done = env.step(action)
+    observation = new_observation
+    env.render()
+```
+
 ## Learning
 
 In the `train.py` you can see, how agent training is implemented. All you need to do is specify the exploration strategy and adjust the environment to your needs. More info about adjusting the environment and learning process is [here](url). I found that it takes around 2000 iterations to learn to land without any curriculum learning, but the process can be significantly sped up by setting up a task difficulty schedule. This can be easily done through the `Curriculum` module.

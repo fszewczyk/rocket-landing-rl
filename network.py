@@ -47,7 +47,7 @@ class QNetwork(nn.Module):
 
 
 class Agent():
-    def __init__(self, gamma, epsilon, lr, input_dims, batch_size, n_actions, max_mem_size=25000, exploration_min=0.01, exploration_dec=3e-4, exploration=Exploration.EPSILON_GREEDY):
+    def __init__(self, gamma, epsilon, lr, input_dims, batch_size, n_actions=4, max_mem_size=25000, exploration_min=0.01, exploration_dec=3e-4, exploration=Exploration.EPSILON_GREEDY):
         """!
         Initializes an Agent. 
         Note that Agent is seperate from the Deep Q Network.

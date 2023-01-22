@@ -198,7 +198,7 @@ class Environment(gym.Env):
 
         return self.__get_state()
 
-    def step(self, action, it):
+    def step(self, action):
         """!
         Updates the environment for one timestep.
 
