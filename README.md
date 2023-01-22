@@ -29,8 +29,7 @@ observation = env.reset()
 done = False
 
 while not done:
-    new_observation, reward, done = env.step(random.randint(0,3))
-    observation = new_observation
+    observation, reward, done = env.step(random.randint(0,3))
     env.render()
 ```
 
