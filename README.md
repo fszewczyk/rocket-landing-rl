@@ -20,19 +20,16 @@ All the environment's functionalities are described [here](url).
 ### Minimal usage
 
 ```python
-from rocketgym.environment import Environment
-from rocketgym.network import Agent
+from rocketgym import Environment
+
+import random
 
 env = Environment()
-agent = Agent(gamma=0.99, epsilon=1, lr=0.001,
-                  input_dims=[5], batch_size=64)
-
 observation = env.reset()
 done = False
 
 while not done:
-    action = agent.choose_action(observation)
-    new_observation, reward, done = env.step(action)
+    new_observation, reward, done = env.step(random.randint(0,3))
     observation = new_observation
     env.render()
 ```
@@ -46,3 +43,5 @@ In the `train.py` you can see, how agent training is implemented. All you need t
 If you want to make pretty plots, like this one
 ![pretty plot](icons/pretty_plot.png)
 feel free to use `diagnostics.py`. All you need to know to do that is described in the script itself.
+
+_**For a detailed explanation of the environment and the learning algorithms I used, see [here](url).**_
