@@ -12,7 +12,7 @@ _Part of [SHKYERA](https://youtu.be/Kb4bNZGqKyE) project_
 I made a custom OpenAI-Gym environment with fully functioning 2D physics engine. If you want to test your own algorithms using that, download the package by simply typing in terminal (not yet :))
 
 ```
-pip install rocket-landing-gym
+pip install rocketgym
 ```
 
 All the environment's functionalities are described [here](environment/README.md).
@@ -20,7 +20,7 @@ All the environment's functionalities are described [here](environment/README.md
 ### Minimal usage
 
 ```python
-from rocketgym import Environment
+from rocketgym.environment import Environment
 
 import random
 
@@ -29,7 +29,7 @@ observation = env.reset()
 done = False
 
 while not done:
-    observation, reward, done = env.step(random.randint(0,3))
+    observation, reward, done, info = env.step(random.randint(0,3))
     env.render()
 ```
 
