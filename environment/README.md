@@ -5,7 +5,7 @@ Open AI Gym for vertical rocket landing containing an extensive tool to incorpor
 ## Installation
 
 ```
-pip install rocket-landing-gym
+pip install rocketgym
 ```
 
 ## Minimal usage
