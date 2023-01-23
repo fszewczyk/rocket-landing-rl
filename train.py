@@ -7,13 +7,15 @@ import numpy as np
 import torch
 
 from environment.environment import Environment
-from environment.network import Agent
+from network import Agent
 
 for iteration in range(20, 30):
     env = Environment()
     env.curriculum.enable_turn()
     env.curriculum.enable_random_starting_rotation()
     env.curriculum.enable_x_velocity_reward()
+    env.curriculum.set_random_height(1, 10)
+    env.curriculum.enable_increasing_height()
 
     exploration = Exploration.EPSILON_GREEDY
     exploration_dec = EPS_DECREASE
@@ -27,38 +29,30 @@ for iteration in range(20, 30):
     velocities = []
     angles = []
 
-    n_games = 2000
-
-    dash = Dashboard(f"Curriculum + eps-greedy/{iteration}.csv")
-    dash.write_header_to_file(
-        "algorithm,exploration_strategy,episode,epsilon,epsilon_dec,score,exploration_min")
+    n_games = 100
 
     for i in range(n_games):
+        import random
+        print(i)
         score = 0
         done = False
 
         observation = env.reset()
 
-        if i == 200:
-            env.curriculum.set_random_height(1, 1)
-            env.curriculum.enable_increasing_height()
-
         while not done:
             action = agent.choose_action(observation)
-            new_observation, reward, done = env.step(action)
+            new_observation, reward, done = env.step(random.randint(0, 3))
             score += reward
 
             agent.store_transition(observation, action,
                                    reward, new_observation, done)
-            agent.learn()
 
             observation = new_observation
 
-        dash.write_record_to_file(
-            [algorithm, exploration, i+1, agent.epsilon, agent.exploration_dec, score, exploration_min])
+        # agent.learn()
 
         if i % 100 == 0:
-            dash.plot_log(env.rocket.flight_log, episode=i)
+            # dash.plot_log(env.rocket.flight_log, episode=i)
             torch.save(agent.q_eval.state_dict(), f"models/model_{i}")
 
         scores.append(score)
@@ -67,7 +61,7 @@ for iteration in range(20, 30):
 
         velocity = env.rocket.flight_log.velocity_y[-1]
         if velocity > 0:
-            print("Failed")
+            pass
         else:
             velocities.append(velocity)
             angles.append(math.degrees(
@@ -76,5 +70,7 @@ for iteration in range(20, 30):
         avg_vel = np.mean(velocities[-100:])
         avg_ang = np.mean(angles[-100:])
 
-        print(
-            f"Episode: {i}\n\tEpsilon: {agent.epsilon}\n\tScore: {score:.2f}\n\tAverage score: {avg_score:.4f}\n\tAverage velocity: {avg_vel:.2f}\n\tAverage angle: {avg_ang:.2f}")
+        # print(
+        #     f"Episode: {i}\n\tEpsilon: {agent.epsilon}\n\tScore: {score:.2f}\n\tAverage score: {avg_score:.4f}\n\tAverage velocity: {avg_vel:.2f}\n\tAverage angle: {avg_ang:.2f}")
+
+    print(scores)
