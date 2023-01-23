@@ -15,7 +15,7 @@ I made a custom OpenAI-Gym environment with fully functioning 2D physics engine.
 pip install rocket-landing-gym
 ```
 
-All the environment's functionalities are described [here](url).
+All the environment's functionalities are described [here](environment/README.md).
 
 ### Minimal usage
 
@@ -35,7 +35,7 @@ while not done:
 
 ## Learning
 
-In the `train.py` you can see, how agent training is implemented. All you need to do is specify the exploration strategy and adjust the environment to your needs. More info about adjusting the environment and learning process is [here](url). I found that it takes around 2000 iterations to learn to land without any curriculum learning, but the process can be significantly sped up by setting up a task difficulty schedule. This can be easily done through the `Curriculum` module.
+In the `train.py` you can see, how agent training is implemented. All you need to do is specify the exploration strategy and adjust the environment to your needs. More info about adjusting the environment and learning process is [here](environment/README.md). I found that it takes around 2000 iterations to learn to land without any curriculum learning, but the process can be significantly sped up by setting up a task difficulty schedule. This can be easily done through the `Curriculum` module.
 
 ## Diagnostics
 
