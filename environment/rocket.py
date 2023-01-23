@@ -1,10 +1,9 @@
-from dataclasses import dataclass
 import math
-
-from environment.vector import Vector
-from environment.constants import *
-
 import cv2
+import os
+
+from .vector import Vector
+from .constants import *
 
 
 class FlightLog():
@@ -57,18 +56,22 @@ class Rocket(Vector):
 
         rocket_width = 250
 
-        self.icon_idle = cv2.imread("img/rocket_idle.png")
+        self.icon_idle = cv2.imread(os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "img/rocket_idle.png"))
         self.icon_idle = cv2.resize(
             self.icon_idle, (rocket_width, rocket_width))
 
-        self.icon_mid = cv2.imread("img/rocket_middle.png")
+        self.icon_mid = cv2.imread(os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "img/rocket_middle.png"))
         self.icon_mid = cv2.resize(self.icon_mid, (rocket_width, rocket_width))
 
-        self.icon_right = cv2.imread("img/rocket_right.png")
+        self.icon_right = cv2.imread(os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "img/rocket_right.png"))
         self.icon_right = cv2.resize(
             self.icon_right, (rocket_width, rocket_width))
 
-        self.icon_left = cv2.imread("img/rocket_left.png")
+        self.icon_left = cv2.imread(os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "img/rocket_left.png"))
         self.icon_left = cv2.resize(
             self.icon_left, (rocket_width, rocket_width))
 

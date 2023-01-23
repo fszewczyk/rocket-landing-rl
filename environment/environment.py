@@ -3,10 +3,11 @@ import random
 import numpy as np
 import gym
 import cv2
+import os
 
-from environment.rocket import Rocket
-from environment.tvc import TVC
-from environment.constants import *
+from .rocket import Rocket
+from .tvc import TVC
+from .constants import *
 
 
 class Curriculum():
@@ -161,7 +162,8 @@ class Environment(gym.Env):
         super(Environment, self).__init__()
 
         self.canvas_shape = (1500, 1200, 3)
-        self.background = cv2.imread("img/bg.png")
+        self.background = cv2.imread(os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "img/bg.png"))
 
         self.curriculum = Curriculum()
         self.reset()
@@ -207,6 +209,7 @@ class Environment(gym.Env):
         @return list: newly observed state of the environment
         @return float: sampled reward
         @return boolean: whether or not the simulation is finished
+        @return dict: additional information
         """
 
         if action == Action.LEFT:
@@ -242,7 +245,7 @@ class Environment(gym.Env):
 
         self.timestep += TIMESTEP
 
-        return self.__get_state(), reward, self.rocket.position_y <= 0 or abs(self.rocket.position_x) > 10
+        return self.__get_state(), reward, self.rocket.position_y <= 0 or abs(self.rocket.position_x) > 10, {}
 
     def render(self, mode="human"):
         """!

@@ -41,7 +41,8 @@ for iteration in range(20, 30):
 
         while not done:
             action = agent.choose_action(observation)
-            new_observation, reward, done = env.step(random.randint(0, 3))
+            new_observation, reward, done, info = env.step(
+                random.randint(0, 3))
             score += reward
 
             agent.store_transition(observation, action,
