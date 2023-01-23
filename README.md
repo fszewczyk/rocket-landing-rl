@@ -1,7 +1,5 @@
 _Part of [SHKYERA](https://youtu.be/Kb4bNZGqKyE) project_
 
-## _Still in development_
-
 ![background](img/shkyera.png "Shkyera Aerospace")
 ![Rocket landing](img/landing_anim.gif)
 
