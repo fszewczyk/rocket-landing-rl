@@ -10,24 +10,21 @@ from environment.constants import *
 
 
 class QNetwork(nn.Module):
-    def __init__(self, lr, input_dims, layer1_dims, layer2_dims, n_actions):
+    def __init__(self, lr, input_dims, layer1_dims, n_actions):
         """!
         Initializes a Deep Q Network used to estimate Q-values of possible actions.
 
         @param lr           (float): Learning rate
         @param input_dims   (int): Input dimensions
         @param layer1_dims  (int): Dimensions in the first layer
-        @param layer2_dims  (int): Dimensions in the second layer
         @param n_actions    (int): Number of possible actions
         """
 
         super(QNetwork, self).__init__()
 
-        # TODO: check different types of layers
         self.fc1 = nn.Linear(*input_dims, layer1_dims)
         self.fc3 = nn.Linear(layer1_dims, n_actions)
 
-        # TODO: Check different optimizer and loss
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
         self.loss = nn.L1Loss()
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
@@ -79,7 +76,7 @@ class Agent():
         self.mem_cntr = 0
 
         self.q_eval = QNetwork(
-            lr=lr, input_dims=input_dims, layer1_dims=32, layer2_dims=32, n_actions=n_actions)
+            lr=lr, input_dims=input_dims, layer1_dims=32, n_actions=n_actions)
 
         self.state_buffer = np.zeros(
             (self.buffer_size, *input_dims), dtype=np.float32)
