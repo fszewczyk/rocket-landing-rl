@@ -7,7 +7,7 @@ _Part of [SHKYERA](https://youtu.be/Kb4bNZGqKyE) project_
 
 ## Environment
 
-I made a custom OpenAI-Gym environment with fully functioning 2D physics engine. If you want to test your own algorithms using that, download the package by simply typing in terminal (not yet :))
+I made a custom OpenAI-Gym environment with fully functioning 2D physics engine. If you want to test your own algorithms using that, download the package by simply typing in terminal:
 
 ```
 pip install rocketgym
