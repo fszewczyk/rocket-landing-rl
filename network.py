@@ -208,7 +208,4 @@ class Agent():
         for i, p in enumerate(probabilites):
             probabilites[i] /= s
 
-        if a or random.uniform(0, 1) < 0.01:
-            print(a, probabilites)
-
         return random.choices(self.action_space, weights=probabilites)[0]

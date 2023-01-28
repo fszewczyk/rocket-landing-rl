@@ -261,8 +261,13 @@ class Environment(gym.Env):
         assert mode in ["human", "rgb_array"]
 
         if mode == "human":
-            cv2.imshow("Rocket landing", self.canvas)
-            cv2.waitKey(int(1000*TIMESTEP))
+            try:
+                self.canvas = cv2.resize(
+                    self.canvas, (int(self.canvas.shape[1] / 2.5), int(self.canvas.shape[0] / 2.5)))
+                cv2.imshow("Rocket landing", self.canvas)
+                cv2.waitKey(int(2000*TIMESTEP))
+            except:
+                pass
 
         elif mode == "rgb_array":
             return self.canvas

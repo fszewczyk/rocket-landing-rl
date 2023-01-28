@@ -33,7 +33,20 @@ while not done:
 
 ## Learning
 
-In the `train.py` you can see, how agent training is implemented. All you need to do is specify the exploration strategy and adjust the environment to your needs. More info about adjusting the environment and learning process is [here](environment/README.md). I found that it takes around 2000 iterations to learn to land without any curriculum learning, but the process can be significantly sped up by setting up a task difficulty schedule. This can be easily done through the `Curriculum` module.
+```
+python3 train.py -h
+usage: Rocket Landing - Reinforcemeng Learning [-h] [--curriculum] [--softmax] [--save] [-model MODEL]
+
+optional arguments:
+  -h, --help    show this help message and exit
+  --curriculum  Use Curriculum Learning
+  --softmax     Use Softmax exploration instead of eps-greedy
+  --save        Save flight logs and models every 100 episodes
+  -model MODEL  Path to the model to load. Overrides the curriculum and exploration
+                settings. Renders the scene from the start.
+```
+
+In the `train.py` you can see, how agent training is implemented. All you need to do is specify the exploration strategy and adjust the environment to your needs. I found that it takes around 2000 iterations to learn to land without any curriculum learning, but the process can be significantly sped up by setting up a task difficulty schedule. This can be easily done through the `Curriculum` module.
 
 ## Diagnostics
 
