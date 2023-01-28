@@ -32,7 +32,6 @@ class Dashboard():
         cr = fig.add_subplot(grid[1, 1])
         bl = fig.add_subplot(grid[2, 0])
         br = fig.add_subplot(grid[2, 1])
-        # TODO: set figure title
 
         tl.set_title("Trajectory")
         tl.scatter(log.position_x[::2],
