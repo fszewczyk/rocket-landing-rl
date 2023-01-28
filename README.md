@@ -17,6 +17,8 @@ All the environment's functionalities are described [here](environment/README.md
 
 ### Minimal usage
 
+Make sure that all dependencies are installed by `pip install -r requirements.txt`
+
 ```python
 from rocketgym.environment import Environment
 
