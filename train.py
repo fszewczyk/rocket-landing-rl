@@ -38,7 +38,7 @@ def train(curriculum, softmax, save_progress, model=None):
     algorithm = "deepQ"
 
     if model is None:
-        agent = Agent(gamma=0.99, epsilon=exploration_start, lr=0.003,
+        agent = Agent(gamma=0.99, epsilon=exploration_start, lr=0.001,
                       input_dims=[5], batch_size=64, n_actions=4, exploration_dec=exploration_dec, exploration_min=exploration_min, exploration=exploration)
     else:
         agent = Agent(gamma=0.99, epsilon=0, lr=0.001,
@@ -60,7 +60,7 @@ def train(curriculum, softmax, save_progress, model=None):
 
         if curriculum and i == 200:
             env.curriculum.set_random_height(1, 1)
-            env.curriculum.enable_increasing_height(rate=0.02)
+            env.curriculum.enable_increasing_height()
 
         observation = env.reset()
 
