@@ -31,7 +31,7 @@ Rocket is treated as a 2D free body. Its physics properties have been modeled af
 
 ### State space
 
-1. Angle made with y-axis ( $rad$ ): [$-\frac{\pi}{2},\frac{\pi}{2}$]
+1. Angle made with y-axis ( $rad$ ): [ $-\frac{\pi}{2},\frac{\pi}{2}$ ]
 2. Position Y ( $m$ ): $[0,\infty]$
 3. Velocity X ( $\frac{m}{s}$ ): $[-\infty,\infty]$
 4. Velocity Y ( $\frac{m}{s}$ ): $[-\infty,\infty]$
