@@ -56,4 +56,4 @@ If you want to make pretty plots, like this one
 ![pretty plot](img/pretty_plot.png)
 feel free to use `diagnostics.py`. All you need to know to do that is described in the script itself.
 
-_**For a detailed explanation of the environment and the learning algorithms I used, see [here](url).**_
+_**For a detailed explanation of the environment and the learning algorithms I used, see [here](https://drive.google.com/file/d/1iqoxaIz_gqfDMqdZBwWLJYfiu0FzKDsv/view?usp=sharing).**_
