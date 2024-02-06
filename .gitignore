@@ -1,5 +1,6 @@
 *.pyc
 html/
 latex/
-logs/
-models/
+logs/plots/*
+models/*
+!.gitkeep
